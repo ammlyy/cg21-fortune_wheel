@@ -1,6 +1,7 @@
 var gl;
-var app = {};
-    app.meshes = {};
+var meshes = {};
+var textures = {};
+var buffers = {}
 
 async function init(){
     this.gl = document.getElementById("canva").getContext("webgl2")
@@ -10,29 +11,68 @@ async function init(){
         return
     }
 
+    
     twgl.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    await loadMesh()
-}
+    var path = window.location.pathname;
+    var page = path.split("/").pop();
+    baseDir = window.location.href.replace(page, '');
+    shaderDir = baseDir+"shaders/";
 
-async function loadMesh(){
-    OBJ.downloadMeshes({
-        'frame': 'assets/frame/frame.obj', // located in the models folder on the server
-        'stand': 'assets/stand/stand.obj',
-        'wheel': 'assets/wheel/wheel.obj'
-      }, initMeshes);}
+    meshes.frame = await loadMeshFromFile(baseDir + '/assets/frame/frame.obj')
+    meshes.stand = await loadMeshFromFile(baseDir + '/assets/stand/stand.obj')
+    meshes.wheel = await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj')
+    await loadShaders(shaderDir)
+    
+    textures = await loadTextures()
 
-function initMeshes(meshes){
-    app.meshes = meshes;
-    // initialize the VBOs
-    OBJ.initMeshBuffers(gl, app.meshes.suzanne);
-    OBJ.initMeshBuffers(gl, app.meshes.sphere);
-}
+    buffers.frame = addMesh(meshes.frame)
+    buffers.stand = addMesh(meshes.stand)
+    buffers.wheel = addMesh(meshes.wheel)
+
+    console.log(buffers)
+    
+  }
   
-async function loadShaders(){
+async function loadMeshFromFile(path){
+    let str = await utils.get_objstr(path);
+    let mesh = new OBJ.Mesh(str);
+    return mesh;
+}
+
+
+async function loadShaders(path){
+  await utils.loadFiles([path + 'vs.glsl', path + 'fs.glsl'], function
+  (shaderText) {
+    var vertexShader = utils.createShader(gl, gl.VERTEX_SHADER, shaderText[0]);
+    var fragmentShader = utils.createShader(gl, gl.FRAGMENT_SHADER, shaderText[1]);
+    program = utils.createProgram(gl, vertexShader, fragmentShader);
+  });
+}
+
+async function loadTextures(){
+  return twgl.createTextures(gl, {
+    wheel: { src: "/assets/wheel/wheelSurface_Color.png"},
+    frame: { src: "/assets/frame/frameSurface_Color.png"}
+  });
 
 }
+
+function addMesh(mesh){
+
+  const arrays = {
+    position: mesh.vertices,
+    normal:   mesh.vertexNormals,
+    texcoord: mesh.textures,
+    indices:  mesh.indices,
+  };
+  return twgl.createBufferInfoFromArrays(gl, arrays);
+
+}
+
+
+
 
 init()
   

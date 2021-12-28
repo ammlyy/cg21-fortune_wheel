@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/ammlyy/cg21-fortune_wheel#readme",
   "dependencies": {
-    "http-server": "^14.0.0"
+    "http-server": "^14.0.0",
+    "require": "^2.4.20",
+    "twgl.js": "^4.21.2"
   }
 }
