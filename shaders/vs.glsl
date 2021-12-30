@@ -5,7 +5,7 @@ in vec3 inNormal;
 in vec2 in_uv;
 
 uniform mat4 matrix; 
-uniform mat4 normalMatrix;
+uniform mat4 normMatrix;
 uniform mat4 posMatrix;
 
 out vec3 fsNormal;
@@ -15,7 +15,7 @@ out vec3 fs_pos;
 void main() {
   fsUV = in_uv;
   fs_pos = mat3(posMatrix) * inPosition;
-  fsNormal = mat3(normalMatrix) * inNormal;
+  fsNormal = mat3(normMatrix) * inNormal;
 
   gl_Position = matrix * vec4(inPosition, 1.0);
 }

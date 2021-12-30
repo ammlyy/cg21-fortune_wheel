@@ -1,106 +1,179 @@
 var gl;
-var meshes = {};
+var program;
+var meshes = [];
 var textures = {};
-var buffers = []
 var viewMatrix;
 var worldMatrices = []
 var perspectiveMatrix;
 
-async function init(){
-    this.gl = document.getElementById("canva").getContext("webgl2")
+async function init() {
+  var path = window.location.pathname;
+  var page = path.split("/").pop();
+  baseDir = window.location.href.replace(page, '');
+  shaderDir = baseDir + "shaders/";
+  gl = document.getElementById("canva").getContext("webgl2")
 
-    if(!gl){
-        console.log("webgl2 context not found")
-        return
-    }
-
-    
-    twgl.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-    var path = window.location.pathname;
-    var page = path.split("/").pop();
-    baseDir = window.location.href.replace(page, '');
-    shaderDir = baseDir+"shaders/";
-
-    meshes.frame = await loadMeshFromFile(baseDir + '/assets/frame/frame.obj')
-    meshes.stand = await loadMeshFromFile(baseDir + '/assets/stand/stand.obj')
-    meshes.wheel = await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj')
-    
-    await loadShaders(shaderDir)
-
-    textures = await loadTextures()
-
-    buffers.push(addMesh(meshes.frame))
-    buffers.push(addMesh(meshes.stand))
-    buffers.push(addMesh(meshes.wheel))
-
-    draw()
+  if (!gl) {
+    console.log("webgl2 context not found")
+    return
   }
-  
-async function loadMeshFromFile(path){
-    let str = await utils.get_objstr(path);
-    let mesh = new OBJ.Mesh(str);
-    return mesh;
+
+  await loadMeshFromFile(baseDir + '/assets/frame/frame.obj').then((obj)=>meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj)=>meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj)=>meshes.push(obj))
+  vaos = new Array(3)
+
+  await loadShaders(shaderDir)
+  gl.useProgram(program);
+
+  await loadTextures().then(res => texture = res)
+
+  utils.resizeCanvasToDisplaySize(gl.canvas);
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST);
+
+  setupUniforms()
+
+  for (let i = 0; i < meshes.length; i++) {
+    fillBuffers(i)
+  }
+
+  main()
+
 }
 
 
-async function loadShaders(path){
+function main() {
+  var lastUpdateTime = (new Date).getTime();
+  var cx = 0.0;
+  var cy = 0.0;
+  var cz = 0.0;
+  var cs = 0.5;
+  var perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
+  // Create a texture.
+  var texture = gl.createTexture();
+  // use texture unit 0
+  gl.activeTexture(gl.TEXTURE0);
+  // bind to the TEXTURE_2D bind point of texture unit 0
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Asynchronously load an image
+  var image = new Image();
+  image.src = baseDir + "assets/frame/frameSurface_Color.png";
+  image.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    gl.generateMipmap(gl.TEXTURE_2D);
+  };
+
+  drawScene();
+
+  function animate() {
+    worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0);
+  }
+
+
+  function drawScene() {
+    animate();
+
+    utils.resizeCanvasToDisplaySize(gl.canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+
+    var viewMatrix = utils.MakeView(0.0, 3.0, 6.0, -5.0, 0.0);
+
+    for (var i = 0; i < 3; i++) {
+      var viewWorldMatrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
+      var projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
+     
+      gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.uniform1i(textLocation, 0);
+  
+      gl.bindVertexArray(vaos[i]);
+      gl.drawElements(gl.TRIANGLES, meshes[i].indices.length, gl.UNSIGNED_SHORT, 0 );
+  
+    }
+
+    window.requestAnimationFrame(drawScene)
+
+  }
+}
+
+async function loadMeshFromFile(path) {
+  let str = await utils.get_objstr(path);
+  let mesh = new OBJ.Mesh(str);
+  return mesh;
+}
+
+async function loadShaders(path) {
   await utils.loadFiles([path + 'vs.glsl', path + 'fs.glsl'], function
-  (shaderText) {
+    (shaderText) {
     var vertexShader = utils.createShader(gl, gl.VERTEX_SHADER, shaderText[0]);
     var fragmentShader = utils.createShader(gl, gl.FRAGMENT_SHADER, shaderText[1]);
     program = utils.createProgram(gl, vertexShader, fragmentShader);
-    gl.useProgram(program);
   });
 }
 
-async function loadTextures(){
+async function loadTextures() {
   return twgl.createTextures(gl, {
-    wheel: { src: "/assets/wheel/wheelSurface_Color.png"},
-    frame: { src: "/assets/frame/frameSurface_Color.png"}
+    wheel: { src: "/assets/wheel/wheelSurface_Color.png" },
+    frame: { src: "/assets/frame/frameSurface_Color.png" }
   });
 
 }
 
-function addMesh(mesh){
+function setupUniforms() {
+  positionAttributeLocation = gl.getAttribLocation(program, "inPosition");
+  normalAttributeLocation = gl.getAttribLocation(program, "inNormal");
+  uvAttributeLocation = gl.getAttribLocation(program, "in_uv");
 
-  const arrays = {
-    position: mesh.vertices,
-    normal:   mesh.vertexNormals,
-    texcoord: mesh.textures,
-    indices:  mesh.indices,
-  };
-  return twgl.createBufferInfoFromArrays(gl, arrays);
+  matrixLocation = gl.getUniformLocation(program, "matrix");
+  normalMatrixPositionHandle = gl.getUniformLocation(program, "normMatrix");
+  vertexMatrixPositionHandle = gl.getUniformLocation(program, "posMatrix");
+
+  textLocation = gl.getUniformLocation(program, "in_texture");
 
 }
 
-function draw(){
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+function fillBuffers(i) {
+  let mesh = meshes[i];
+  let vao = gl.createVertexArray();
+  vaos[i] = vao;
+  gl.bindVertexArray(vao);
 
-  viewMatrix = utils.MakeView(3.0, 3.0, 2.5, -45.0, 0);
-  perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
+  var positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.vertices), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(positionAttributeLocation);
+  gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
-  for (var i=0; i<3; i++) {
-    worldMatrices[i] = utils.MakeWorld(0.0, 0.0, -3.0, 0.0, 0.0, 0.5);
-    var worldViewMatrix = utils.multiplyMatrices(viewMatrix, worldMatrices[i]);
-    var projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, worldViewMatrix);
+  var uvBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.textures), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(uvAttributeLocation);
+  gl.vertexAttribPointer(uvAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    var normalTransformationMatrix = utils.invertMatrix(utils.transposeMatrix(worldMatrices[i])); 
+  var normalBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.vertexNormals), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(normalAttributeLocation);
+  gl.vertexAttribPointer(normalAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
-    const uniforms = {
-      matrix: utils.transposeMatrix(projectionMatrix),
-      normalMatrix: utils.transposeMatrix(normalTransformationMatrix),
-      posMatrix: utils.transposeMatrix(worldViewMatrix)
-    }
-
-    twgl.setBuffersAndAttributes(gl, program, buffers[i]);
-    twgl.setUniforms(program, uniforms);
-    twgl.drawBufferInfo(gl, buffers[i]);
-    requestAnimationFrame(draw);
-
-  }
-
+  var indexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.indices), gl.STATIC_DRAW);
 
 }
 
