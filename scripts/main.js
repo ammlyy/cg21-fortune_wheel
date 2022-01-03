@@ -6,6 +6,32 @@ var viewMatrix;
 var worldMatrices = []
 var perspectiveMatrix;
 
+// Light parameters
+var lightPosition = [0.0, 100.0, 0.0];
+var lightDirection = [1.0, 0.0, 0.0];
+var lightDecay = 1.0;
+var lightType = [0.0, 0.0, 1.0];    //0: direct, 1: point, 2: spot
+var diffuseType = [1.0, 0.0];       //0: Lambert, 1: Toon
+var specularType = [1.0, 0.0];      //0: Phong, 1: Blinn
+var lightColor = [1.0, 1.0, 1.0, 1.0];
+var diffuseColor = [1.0, 1.0, 1.0, 1.0];
+var specularColor = [1.0, 1.0, 1.0, 1.0];
+var specularShine = 1.0;
+
+var lightTarget = 50.0;   //Distance at which light reduction is 1
+
+var spotLight = {
+  c_in: 0.0,
+  c_out: 0.0
+}
+
+var ambientLightColor = [1.0, 1.0, 1.0, 1.0];
+var ambientMaterialColor = [0.5, 0.5, 0.5, 1.0];
+var diffuseTexMix = 1.0;      //0: full color, 1: full texture
+var diffuseToonTh = 0.5;
+
+var eyePosition = [0.0, 0.0, 0.0];
+
 async function init() {
   var path = window.location.pathname;
   var page = path.split("/").pop();
@@ -113,6 +139,31 @@ function main() {
     gl.enable(gl.CULL_FACE);
 
     var viewMatrix = utils.MakeView(0.0, 3.0, 6.0, -5.0, 0.0);
+    eyePosition = [0.0, 3.0, 6.0];
+
+    // Set up lights
+    gl.uniform3fv(lightPositionLocation, lightPosition);
+    gl.uniform3fv(lightDirectionLocation, lightDirection);
+    gl.uniform1f(lightDecayLocation, lightDecay);
+    gl.uniform3fv(lightTypeLocation, lightType);
+    gl.uniform2fv(diffuseTypeLocation, diffuseType);
+    gl.uniform2fv(specularTypeLocation, specularType);
+    gl.uniform4fv(lightColorLocation, lightColor);
+    gl.uniform4fv(diffuseColorLocation, diffuseColor);
+    gl.uniform1f(dTexMixLocation, diffuseTexMix);
+    gl.uniform1f(dToonThLocation, diffuseToonTh);
+    gl.uniform4fv(specularColorLocation, specularColor);
+    gl.uniform1f(specularShineLocation, specularShine);
+
+    gl.uniform1f(lightTargetLocation, lightTarget);
+
+    gl.uniform1f(coneInLocation, spotLight.c_in);
+    gl.uniform1f(coneOutLocation, spotLight.c_out);
+
+    gl.uniform4fv(ambientLightColorLocation, ambientLightColor);
+    gl.uniform4fv(ambientMaterialColorLocation, ambientMaterialColor);
+
+    gl.uniform3fv(eyePosLocation, eyePosition);
 
     for (var i = 0; i < 3; i++) {
       var viewWorldMatrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
@@ -171,7 +222,25 @@ function setupUniforms() {
 
   isStandLocation = gl.getUniformLocation(program, "isStand");
 
-
+  // Lights
+  lightTypeLocation = gl.getUniformLocation(program, "lightType");
+  lightPositionLocation = gl.getUniformLocation(program, "lightPos");
+  lightDirectionLocation = gl.getUniformLocation(program, "lightDir");
+  lightDecayLocation = gl.getUniformLocation(program, "lightDecay");
+  diffuseTypeLocation = gl.getUniformLocation(program, "diffuseType");
+  specularTypeLocation = gl.getUniformLocation(program, "specularType");
+  specularShineLocation = gl.getUniformLocation(program, "SpecShine")
+  lightColorLocation = gl.getUniformLocation(program, "lightColor");
+  diffuseColorLocation = gl.getUniformLocation(program, "diffuseColor");
+  specularColorLocation = gl.getUniformLocation(program, "specularColor");
+  lightTargetLocation = gl.getUniformLocation(program, "lightTarget");
+  coneInLocation = gl.getUniformLocation(program, "coneIn");
+  coneOutLocation = gl.getUniformLocation(program, "coneOut");
+  ambientLightColorLocation = gl.getUniformLocation(program, "ambientLightColor");
+  ambientMaterialColorLocation = gl.getUniformLocation(program, "ambientMatColor");
+  dTexMixLocation = gl.getUniformLocation(program, "DTexMix");
+  dToonThLocation = gl.getUniformLocation(program, "DThoonTh");
+  eyePosLocation = gl.getUniformLocation(program, "eyePos");
 }
 
 function fillBuffers(i) {
