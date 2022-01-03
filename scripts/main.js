@@ -26,8 +26,6 @@ async function init() {
   await loadShaders(shaderDir)
   gl.useProgram(program);
 
-  await loadTextures().then(res => texture = res)
-
   utils.resizeCanvasToDisplaySize(gl.canvas);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 0);
@@ -52,31 +50,55 @@ function main() {
   var cz = 0.0;
   var cs = 0.5;
   var perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
-  // Create a texture.
-  var texture = gl.createTexture();
-  // use texture unit 0
+
+  var texture1 = gl.createTexture();
   gl.activeTexture(gl.TEXTURE0);
-  // bind to the TEXTURE_2D bind point of texture unit 0
-  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.bindTexture(gl.TEXTURE_2D, texture1);
 
   // Asynchronously load an image
   var image = new Image();
-  image.src = baseDir + "assets/frame/frameSurface_Color.png";
+  image.src = baseDir + "assets/wheel/wheelSurface_Color.png";
   image.onload = function () {
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.bindTexture(gl.TEXTURE_2D, texture1);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.generateMipmap(gl.TEXTURE_2D); 
+  };
+
+  var texture2 = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, texture2);
+
+  var image2 = new Image();
+  image2.src = baseDir + "assets/frame/frameSurface_Color.png";
+  image2.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, texture2);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image2);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    gl.generateMipmap(gl.TEXTURE_2D); 
   };
 
   drawScene();
 
   function animate() {
+    var currentTime = (new Date).getTime();
+    if(lastUpdateTime){
+      var deltaC = (30*(currentTime - lastUpdateTime)) / 1000.0;
+      cx += deltaC;
+    }
+
     worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0);
+
+    lastUpdateTime = currentTime;               
+
   }
 
 
@@ -97,8 +119,17 @@ function main() {
       var projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
      
       gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
+      gl.uniform1i(isStandLocation, 0)
+
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
+      if (i == 0) // frame
+        gl.bindTexture(gl.TEXTURE_2D, texture2);
+      if (i == 1){ // stand
+        gl.uniform1i(isStandLocation, 1)
+      } // WHEEEEEEL
+      if (i == 2  ) {
+        gl.bindTexture(gl.TEXTURE_2D, texture1);
+      }
       gl.uniform1i(textLocation, 0);
   
       gl.bindVertexArray(vaos[i]);
@@ -126,13 +157,6 @@ async function loadShaders(path) {
   });
 }
 
-async function loadTextures() {
-  return twgl.createTextures(gl, {
-    wheel: { src: "/assets/wheel/wheelSurface_Color.png" },
-    frame: { src: "/assets/frame/frameSurface_Color.png" }
-  });
-
-}
 
 function setupUniforms() {
   positionAttributeLocation = gl.getAttribLocation(program, "inPosition");
@@ -144,6 +168,9 @@ function setupUniforms() {
   vertexMatrixPositionHandle = gl.getUniformLocation(program, "posMatrix");
 
   textLocation = gl.getUniformLocation(program, "in_texture");
+
+  isStandLocation = gl.getUniformLocation(program, "isStand");
+
 
 }
 
