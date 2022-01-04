@@ -101,8 +101,8 @@ function main() {
     var currentTime = (new Date).getTime();
     
     if (lastUpdateTime && startSpinning) {
-      var t =  ( (currentTime - lastUpdateTime) / 1000.0 ) % 1.0
-      g_time += utils.ExponentialImpulse(g_time+t, 2.0) / 60.0
+      var t =  ( (currentTime - lastUpdateTime) / 1000.0 )
+      g_time += (utils.ExponentialImpulse(g_time+t, 1.0) / 100.0 )
       console.log(g_time)
       last_rotation = g_time % 1.00
     }

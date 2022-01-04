@@ -2,7 +2,7 @@ var spinTime;
 
 function spin(){
     startSpinning = true;
-    spinTime = (Math.random() * 2.0 + 3.0)
+    spinTime = (Math.random() * 2.0 + 5.0)
 
     setTimeout(()=>{
         startSpinning = false;
