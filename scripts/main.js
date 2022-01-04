@@ -160,7 +160,7 @@ function main() {
         gl.uniform1i(isStandLocation, 1)
       } // WHEEEEEEL
       if (i == 2  ) {
-        worldMatrix = createRotMatrix(g_time*0.1)
+        worldMatrix = utils.multiplyMatrices(worldMatrix, createRotMatrix(g_time*0.1))
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
