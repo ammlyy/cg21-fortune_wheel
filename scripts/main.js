@@ -12,13 +12,13 @@ var perspectiveMatrix;
 
 // Light parameters
 var lightPosition = [0.0, 10.0, 0.0];
-var lightDirection = [0.0, 1.0, 0.0];
+var lightDirection = [1.0, 0.0, 0.0];
 var lightDecay = 1.0;
 var lightType = [1.0, 0.0, 0.0];    //0: direct, 1: point, 2: spot
 var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon
 var specularType = [0.0, 0.0];      //0: Phong, 1: Blinn
 var lightColor = [1.0, 0.0, 0.0, 1.0];
-var diffuseColor = [0.0, 1.0, 0.0, 1.0];
+var diffuseColor = [1.0, 0.0, 0.0, 1.0];
 var specularColor = [1.0, 0.0,0.0, 1.0];
 var specularShine = 1.0;
 
@@ -296,21 +296,24 @@ function setupUniforms() {
   isStandLocation = gl.getUniformLocation(program, "isStand");
 
   // Lights
-
-
-  materialDiffColorHandle = gl.getUniformLocation(program, 'mDiffColor');
-  lightPositionGeneralHandle = gl.getUniformLocation(program, 'lightPositionGeneral');
-  lightColorHandleGeneral = gl.getUniformLocation(program, 'lightColorGeneral');
-
-  lightDirectionHandle = gl.getUniformLocation(program, 'lightDirection');
-  lightColorHandleDir = gl.getUniformLocation(program, 'lightColor');
-
-  lightPosLocation = gl.getUniformLocation(program, 'LAPos');
-  lightTargetLocation = gl.getUniformLocation(program, "LATarget");
-  lightDecayLocation = gl.getUniformLocation(program, "LADecay");
-  lightColorHandlePoint = gl.getUniformLocation(program, 'LAlightColor');
-
-  ambientLightColorHandle = gl.getUniformLocation(program, 'ambientLightColor');
+  lightTypeLocation = gl.getUniformLocation(program, "lightType");
+  lightPositionLocation = gl.getUniformLocation(program, "lightPos");
+  lightDirectionLocation = gl.getUniformLocation(program, "lightDir");
+  lightDecayLocation = gl.getUniformLocation(program, "lightDecay");
+  diffuseTypeLocation = gl.getUniformLocation(program, "diffuseType");
+  specularTypeLocation = gl.getUniformLocation(program, "specularType");
+  specularShineLocation = gl.getUniformLocation(program, "SpecShine")
+  lightColorLocation = gl.getUniformLocation(program, "lightColor");
+  diffuseColorLocation = gl.getUniformLocation(program, "diffuseColor");
+  specularColorLocation = gl.getUniformLocation(program, "specularColor");
+  lightTargetLocation = gl.getUniformLocation(program, "lightTarget");
+  coneInLocation = gl.getUniformLocation(program, "coneIn");
+  coneOutLocation = gl.getUniformLocation(program, "coneOut");
+  ambientLightColorLocation = gl.getUniformLocation(program, "ambientLightColor");
+  ambientMaterialColorLocation = gl.getUniformLocation(program, "ambientMatColor");
+  dTexMixLocation = gl.getUniformLocation(program, "DTexMix");
+  dToonThLocation = gl.getUniformLocation(program, "DThoonTh");
+  eyePosLocation = gl.getUniformLocation(program, "eyePos");
 
 }
 
