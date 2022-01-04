@@ -22,8 +22,8 @@ void main() {
     }
     else
     {
-   vec4 color0 = texture(in_texture, uv);
-   vec4 color1 = texture(AO_texture, uv);
+   vec4 color0 = texture(in_texture, fsUV);
+   vec4 color1 = texture(AO_texture, fsUV);
    outColor = color0 * color1;    
    }
 }

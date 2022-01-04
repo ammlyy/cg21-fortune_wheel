@@ -28,7 +28,8 @@ async function init() {
 
   await loadMeshFromFile(baseDir + '/assets/frame/frame.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj) => meshes.push(obj))
-  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) =>  meshes.push(obj))
+  
   vaos = new Array(3)
 
   await loadShaders(shaderDir)
@@ -74,8 +75,8 @@ function main() {
     if (lastUpdateTime) {
       var t = (currentTime - lastUpdateTime) / 1000.0;
     }
-    lastUpdateTime = currentTime;
     g_time += t
+    lastUpdateTime = currentTime;
 
   }
 
@@ -105,8 +106,7 @@ function main() {
         gl.uniform1i(isStandLocation, 1)
       } // WHEEEEEEL
       if (i == 2  ) {
-        var rot = utils.transposeMatrix(createRotMatrix(g_time*0.1))
-        gl.uniformMatrix4fv(program.tMatrix, gl.FALSE, rot);
+        worldMatrix = createRotMatrix(g_time*0.1)
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
@@ -276,13 +276,13 @@ function fillBuffers(i) {
 }
 
 function createRotMatrix(t){
-	var scale = utils.MakeScaleMatrix(1.0); 	
 
-	var translate_center = utils.MakeTranslateMatrix(0.5, 0.5, 0);	
+	var translate_center = utils.MakeTranslateMatrix(0,3.4,0);	
 	var rotation = utils.MakeRotateZMatrix(360*t);	
+  var translate_back = utils.MakeTranslateMatrix(0,-3.4,0);	
+
 	
-	var rotation_around_center = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
-	var out = utils.multiplyMatrices(rotation_around_center, scale);	
+	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, translate_back));
 	return out;
 }
 
