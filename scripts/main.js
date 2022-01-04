@@ -28,7 +28,11 @@ async function init() {
 
   await loadMeshFromFile(baseDir + '/assets/frame/frame.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj) => meshes.push(obj))
-  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) =>  meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => 
+  {
+     meshes.push(obj)
+     wheelCenterY = findCenter(obj.vertices)
+  })
   
   vaos = new Array(3)
 
@@ -91,6 +95,7 @@ function main() {
     gl.enable(gl.CULL_FACE);
 
     var viewMatrix = utils.MakeView(0.0, 3.0, 6.0, -5.0, 0.0);
+
     for (var i = 0; i < 3; i++) {
       var worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
 
@@ -277,13 +282,27 @@ function fillBuffers(i) {
 
 function createRotMatrix(t){
 
-	var translate_center = utils.MakeTranslateMatrix(0,3.4,0);	
+	var translate_center = utils.MakeTranslateMatrix(0,wheelCenterY,0);	
 	var rotation = utils.MakeRotateZMatrix(360*t);	
-  var translate_back = utils.MakeTranslateMatrix(0,-3.4,0);	
 
 	
-	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, translate_back));
+	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
 	return out;
+}
+
+function findCenter(vertices){
+  const min = vertices.slice(0, 3);
+  const max = vertices.slice(0, 3);
+  for (let i = 3; i < vertices.length; i += 3) {
+    for (let j = 0; j < 3; ++j) {
+      const v = vertices[i + j];
+      min[j] = Math.min(v, min[j]);
+      max[j] = Math.max(v, max[j]);
+    }
+  }
+  var cy = (max[1] - min[1]) / 2 + min[1]
+  return cy;
+
 }
 
 
