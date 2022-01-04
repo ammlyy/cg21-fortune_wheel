@@ -7,8 +7,6 @@ in vec3 fs_pos;
 
 uniform sampler2D in_texture;
 uniform sampler2D AO_texture;
-uniform mat4 tMatrix;
-
 
 uniform bool isStand;
 

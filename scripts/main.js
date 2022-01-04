@@ -14,9 +14,9 @@ var perspectiveMatrix;
 var lightPosition = [0.0, 100.0, 0.0];
 var lightDirection = [1.0, 0.0, 0.0];
 var lightDecay = 1.0;
-var lightType = [0.0, 0.0, 1.0];    //0: direct, 1: point, 2: spot
-var diffuseType = [1.0, 0.0];       //0: Lambert, 1: Toon
-var specularType = [1.0, 0.0];      //0: Phong, 1: Blinn
+var lightType = [0.0, 0.0, 0.0];    //0: direct, 1: point, 2: spot
+var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon
+var specularType = [0.0, 0.0];      //0: Phong, 1: Blinn
 var lightColor = [1.0, 1.0, 1.0, 1.0];
 var diffuseColor = [1.0, 1.0, 1.0, 1.0];
 var specularColor = [1.0, 1.0, 1.0, 1.0];
@@ -53,7 +53,12 @@ async function init() {
 
   await loadMeshFromFile(baseDir + '/assets/frame/frame.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj) => meshes.push(obj))
-  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => 
+  {
+     meshes.push(obj)
+     wheelCenterY = findCenter(obj.vertices)
+  })
+  
   vaos = new Array(3)
 
   await loadShaders(shaderDir)
@@ -97,9 +102,10 @@ function main() {
     var currentTime = (new Date).getTime();
     if (lastUpdateTime) {
       var t = (currentTime - lastUpdateTime) / 1000.0;
+      cx += t*10;
     }
-    lastUpdateTime = currentTime;
     g_time += t
+    lastUpdateTime = currentTime;
 
   }
 
@@ -150,13 +156,11 @@ function main() {
         gl.bindTexture(gl.TEXTURE_2D, frame_tex);
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, frame_AO);
-        gl.uniformMatrix4fv(program.tMatrix, gl.FALSE, utils.identityMatrix());
     if (i == 1){ // stand
         gl.uniform1i(isStandLocation, 1)
       } // WHEEEEEEL
       if (i == 2  ) {
-        var rot = utils.transposeMatrix(createRotMatrix(g_time*0.1))
-        gl.uniformMatrix4fv(program.tMatrix, gl.FALSE, rot);
+        worldMatrix = createRotMatrix(g_time*0.1)
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
@@ -290,7 +294,6 @@ function setupUniforms() {
   AOLocation = gl.getUniformLocation(program, "AO_texture")
 
   isStandLocation = gl.getUniformLocation(program, "isStand");
-  program.tMatrix = gl.getUniformLocation(program, "tMatrix");
 
   // Lights
   lightTypeLocation = gl.getUniformLocation(program, "lightType");
@@ -345,14 +348,28 @@ function fillBuffers(i) {
 }
 
 function createRotMatrix(t){
-	var scale = utils.MakeScaleMatrix(1.0); 	
 
-	var translate_center = utils.MakeTranslateMatrix(0.5, 0.5, 0);	
+	var translate_center = utils.MakeTranslateMatrix(0,wheelCenterY,0);	
 	var rotation = utils.MakeRotateZMatrix(360*t);	
+
 	
-	var rotation_around_center = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
-	var out = utils.multiplyMatrices(rotation_around_center, scale);	
+	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
 	return out;
+}
+
+function findCenter(vertices){
+  const min = vertices.slice(0, 3);
+  const max = vertices.slice(0, 3);
+  for (let i = 3; i < vertices.length; i += 3) {
+    for (let j = 0; j < 3; ++j) {
+      const v = vertices[i + j];
+      min[j] = Math.min(v, min[j]);
+      max[j] = Math.max(v, max[j]);
+    }
+  }
+  var cy = (max[1] - min[1]) / 2 + min[1]
+  return cy;
+
 }
 
 
