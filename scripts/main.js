@@ -11,7 +11,7 @@ var worldMatrices = []
 var perspectiveMatrix;
 
 // Light parameters
-var lightPosition = [20.0, 100.0, 30.0];
+var lightPosition = [0.0, 70.0, 130.0];
 var lightDirection = [0.3, 0.1, 0.7];
 var lightDecay = 1.0;
 var lightType = [0.0, 1.0, 0.0];    //0: direct, 1: point, 2: spot
@@ -19,17 +19,17 @@ var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon
 var specularType = [0.0, 0.0];      //0: Phong, 1: Blinn
 var lightColor = [1.0, 1.0, 1.0, 1.0];
 var diffuseColor = [1.0, 1.0, 1.0, 1.0];
-var specularColor = [1.0, 0.0,0.0, 1.0];
-var specularShine = 1.0;
+var specularColor = [1.0, 1.0, 1.0, 1.0];
+var specularShine = 150.0;
 
-var lightTarget = 61.0;   //Distance at which light reduction is 1
+var lightTarget = 1000.0;   //Distance at which light reduction is 1
 
 var spotLight = {
-  c_in: 80,
-  c_out: 100
+  c_in: 20,
+  c_out: 150
 }
 
-var ambientLightColor = [0.0, 0.0, 0.0, 1.0];
+var ambientLightColor = [0.2, 0.2, 0.2, 1.0];
 var ambientMaterialColor = [1.0, 1.0, 1.0, 1.0];
 var diffuseTexMix = 1.0;      //0: full color, 1: full texture
 var diffuseToonTh = 0.5;
@@ -125,11 +125,11 @@ function main() {
 
     var viewMatrix = utils.MakeView(0.0, 7.0, 10.0, -10.0, 0.0);
     eyePosition = [0.0, 3.0, 6.0];
-    lightPosition = [
+    /*lightPosition = [
       document.getElementById('lposx').value / 100.0,
       document.getElementById('lposy').value / 100.0 ,
       document.getElementById('lposz').value / 100.0,
-    ]
+    ]*/
     // Set up lights
     gl.uniform3fv(lightPositionLocation, lightPosition);
     gl.uniform3fv(lightDirectionLocation, lightDirection);
@@ -157,7 +157,7 @@ function main() {
     for (var i = 0; i < meshes.length; i++) {
       var worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
 
-      gl.uniform1i(isStandLocation, 0)
+      gl.uniform1f(isStandLocation, 0)
 
       if (i == 0) // frame
         gl.activeTexture(gl.TEXTURE0);
@@ -165,7 +165,7 @@ function main() {
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, frame_AO);
     if (i == 1){ // stand
-        gl.uniform1i(isStandLocation, 1)
+        gl.uniform1f(isStandLocation, 1)
       } // WHEEEEEEL
       if (i == 2  ) {
         worldMatrix = utils.multiplyMatrices(worldMatrix, createRotMatrix(g_time))
