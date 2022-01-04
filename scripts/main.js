@@ -14,12 +14,12 @@ var perspectiveMatrix;
 var lightPosition = [0.0, 100.0, 0.0];
 var lightDirection = [1.0, 0.0, 0.0];
 var lightDecay = 1.0;
-var lightType = [0.0, 0.0, 0.0];    //0: direct, 1: point, 2: spot
+var lightType = [1.0, 0.0, 0.0];    //0: direct, 1: point, 2: spot
 var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon
 var specularType = [0.0, 0.0];      //0: Phong, 1: Blinn
-var lightColor = [1.0, 1.0, 1.0, 1.0];
-var diffuseColor = [1.0, 1.0, 1.0, 1.0];
-var specularColor = [1.0, 1.0, 1.0, 1.0];
+var lightColor = [1.0, 0.0, 0.0, 1.0];
+var diffuseColor = [1.0, 0.0, 0.0, 1.0];
+var specularColor = [1.0, 0.0,0.0, 1.0];
 var specularShine = 1.0;
 
 var lightTarget = 50.0;   //Distance at which light reduction is 1
@@ -29,8 +29,8 @@ var spotLight = {
   c_out: 0.0
 }
 
-var ambientLightColor = [1.0, 1.0, 1.0, 1.0];
-var ambientMaterialColor = [0.5, 0.5, 0.5, 1.0];
+var ambientLightColor = [1.0, 0.1, 0.3, 1.0];
+var ambientMaterialColor = [1.0, 1.0, 1.0, 1.0];
 var diffuseTexMix = 1.0;      //0: full color, 1: full texture
 var diffuseToonTh = 0.5;
 
@@ -102,7 +102,7 @@ function main() {
     var currentTime = (new Date).getTime();
     if (lastUpdateTime) {
       var t = (currentTime - lastUpdateTime) / 1000.0;
-      cx += t*10;
+      cx += t*5.0
     }
     g_time += t
     lastUpdateTime = currentTime;
@@ -114,7 +114,7 @@ function main() {
     animate()
     utils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0, 0, 0, 0);
+    gl.clearColor(1, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
