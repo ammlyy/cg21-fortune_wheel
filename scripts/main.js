@@ -11,22 +11,22 @@ var worldMatrices = []
 var perspectiveMatrix;
 
 // Light parameters
-var lightPosition = [0.0, 10.0, 0.0];
-var lightDirection = [1.0, 0.0, 0.0];
+var lightPosition = [20.0, 100.0, 30.0];
+var lightDirection = [0.3, 0.1, 0.7];
 var lightDecay = 1.0;
 var lightType = [1.0, 0.0, 0.0];    //0: direct, 1: point, 2: spot
 var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon
 var specularType = [0.0, 0.0];      //0: Phong, 1: Blinn
 var lightColor = [1.0, 0.0, 0.0, 1.0];
-var diffuseColor = [1.0, 0.0, 0.0, 1.0];
+var diffuseColor = [0.4, 0.3, 0.0, 1.0];
 var specularColor = [1.0, 0.0,0.0, 1.0];
 var specularShine = 1.0;
 
-var lightTarget = 2.0;   //Distance at which light reduction is 1
+var lightTarget = 61.0;   //Distance at which light reduction is 1
 
 var spotLight = {
-  c_in: 5.0,
-  c_out: 45.0
+  c_in: 40,
+  c_out: 0
 }
 
 var ambientLightColor = [1.0, 0.1, 0.3, 1.0];
@@ -66,7 +66,6 @@ async function init() {
 
   utils.resizeCanvasToDisplaySize(gl.canvas);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  gl.clearColor(1, 1, 1, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.enable(gl.DEPTH_TEST);
 
@@ -114,14 +113,18 @@ function main() {
     animate()
     utils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(1, 1, 1, 1);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
     var viewMatrix = utils.MakeView(0.0, 3.0, 6.0, -5.0, 0.0);
     eyePosition = [0.0, 3.0, 6.0];
-
+    lightPosition = [
+      document.getElementById('lposx').value / 10.0,
+      document.getElementById('lposy').value / 10.0 ,
+      document.getElementById('lposz').value / 10.0,
+    ]
     // Set up lights
     gl.uniform3fv(lightPositionLocation, lightPosition);
     gl.uniform3fv(lightDirectionLocation, lightDirection);

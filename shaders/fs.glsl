@@ -11,7 +11,7 @@ uniform sampler2D AO_texture;
 uniform bool isStand;
 
 // SPOT lights
-uniform vec3 lightPos;
+uniform vec3 lightPos; // using as direction
 uniform float lightDecay;    
 uniform vec4 lightColor;
 uniform float lightTarget;
@@ -19,10 +19,7 @@ uniform float coneIn;
 uniform float coneOut;
 uniform vec4 diffuseColor;
 
-
 out vec4 outColor;
-
-
 
 vec4 computeColor(vec3 lightDir){
     float LCosOut = cos(radians(coneOut / 2.0));
@@ -30,15 +27,16 @@ vec4 computeColor(vec3 lightDir){
 
     // Spot
     vec4 spotLightCol = lightColor * 
-                        pow(lightTarget / length(lightPos - fs_pos), lightDecay) *
-                        clamp((dot(normalize(lightPos - fs_pos), lightDir) - LCosOut) / (LCosIn - LCosOut), 0.0, 1.0);
+                        pow(lightTarget / length(lightPos - fs_pos), 0.0) ;
 
     return spotLightCol;
 }
 
 vec3 computeDirection(){
     // Spot
-    vec3 spotLightDir = normalize(lightPos - fs_pos);
+    vec3 spotLightDir = normalize(normalize(lightPos) - fs_pos);
+
+    vec3 DirectLightDir = lightPos;
 
     return spotLightDir;
 }
@@ -63,7 +61,7 @@ void main(){
 
     vec4 diffuse = computeDiffuse(lightDirection, lightColor, diffColor, normalize(fsNormal));
 
-    outColor = clamp(texcol + diffuse, 0.0, 1.0);
+    outColor = vec4(clamp(diffuse, 0.0, 1.0).rgb, 1.0);
     
 
 }

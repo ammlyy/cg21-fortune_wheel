@@ -22,11 +22,15 @@
   <div class='container-fluid'> 
     <div class='row'>
       <div id='GUI' class='col-3'>
-        <label for="customRange1" class="form-label">Light direction</label>
-        <input type="range" class="form-range" id="customRange1">
+        <label for="customRange1" class="form-label">Pos X</label>
+        <input type="range" class="form-range" id="lposx" max='50' min='-50' value='0'>
 
-        <label for="customRange1" class="form-label">Point color</label>
-        <input type="range" class="form-range" id="customRange1">
+        <label for="customRange1" class="form-label">Pos Y</label>
+        <input type="range" class="form-range" id="lposy" max='50' min='-50' value='0'>
+
+        <label for="customRange1" class="form-label">Pos Z</label>
+        <input type="range" class="form-range" id="lposz" max='50' min='-50' value='0'>
+
       </div>
       <div class='col-9'>
               <canvas id='canva' ></canvas>
