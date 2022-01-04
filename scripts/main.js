@@ -37,6 +37,7 @@ var diffuseToonTh = 0.5;
 var eyePosition = [0.0, 0.0, 0.0];
 
 var g_time = 0;
+var startSpinning = false;
 
 
 async function init() {
@@ -92,17 +93,18 @@ function main() {
   var cx = 0.0;
   var cy = 0.0;
   var cz = 0.0;
-  var cs = 0.5;
   var perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
 
   drawScene();
 
   function animate() {
     var currentTime = (new Date).getTime();
-    if (lastUpdateTime) {
-      var t = (currentTime - lastUpdateTime) / 1000.0;
+    
+    if (lastUpdateTime && startSpinning) {
+      var t = (currentTime - lastUpdateTime) / 1000.0
+      g_time += t
+
     }
-    g_time += t
     lastUpdateTime = currentTime;
 
   }
@@ -162,7 +164,7 @@ function main() {
         gl.uniform1i(isStandLocation, 1)
       } // WHEEEEEEL
       if (i == 2  ) {
-        worldMatrix = utils.multiplyMatrices(worldMatrix, createRotMatrix(g_time*0.1))
+        worldMatrix = utils.multiplyMatrices(worldMatrix, createRotMatrix(g_time))
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
@@ -354,7 +356,7 @@ function fillBuffers(i) {
 function createRotMatrix(t){
 
 	var translate_center = utils.MakeTranslateMatrix(0,wheelCenterY,0);	
-	var rotation = utils.MakeRotateZMatrix(360*t);	
+	var rotation = utils.MakeRotateZMatrix(t*360);	
 
 	
 	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));

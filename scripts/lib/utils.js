@@ -646,6 +646,15 @@ var utils={
 			perspective[15] = 0.0;	
 	
 			return perspective;
-		}
+		},
+
+		ExponentialImpulse:function(x, k) {
+			// Creates exponential impulse. x is current time step.
+			// **k : controls the stretching of the function. The maximum happens at x = 1/k
+		
+				let h = k*x
+				return h * Math.exp(1.0 - h)
+			}
+	
 	
 	}
