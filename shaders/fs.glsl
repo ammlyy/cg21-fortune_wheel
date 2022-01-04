@@ -6,6 +6,10 @@ in vec2 fsUV;
 in vec3 fs_pos; 
 
 uniform sampler2D in_texture;
+uniform sampler2D AO_texture;
+uniform mat4 tMatrix;
+
+
 uniform bool isStand;
 
 // Lights
@@ -93,7 +97,7 @@ vec4 computeAmbient(vec4 ambColor) {
 }
 
 void main() {
-    vec4 texcol = texture(in_texture, fsUV);
+    vec4 texcol = texture(in_texture, fsUV) * texture(AO_texture, fsUV);
     vec4 diffColor = diffuseColor*(1.0 - DTexMix) + texcol*DTexMix; 
     vec4 ambColor = ambientMatColor*(1.0 - DTexMix) + texcol*DTexMix;
     vec3 normalVec = normalize(fsNormal);

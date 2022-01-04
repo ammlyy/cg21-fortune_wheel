@@ -1,7 +1,11 @@
 var gl;
 var program;
 var meshes = [];
-var textures = {};
+var textures = [];
+var texturesURLs = ['/assets/wheel/wheelSurface_Color.png', '/assets/frame/frameSurface_color.png']
+var occlusions = []
+const occURLs = ['/assets/wheel/wheelAmbient_Occlusion.png', '/assets/frame/frameAmbient_Occlusion.png']
+
 var viewMatrix;
 var worldMatrices = []
 var perspectiveMatrix;
@@ -32,6 +36,9 @@ var diffuseToonTh = 0.5;
 
 var eyePosition = [0.0, 0.0, 0.0];
 
+var g_time = 0;
+
+
 async function init() {
   var path = window.location.pathname;
   var page = path.split("/").pop();
@@ -44,9 +51,9 @@ async function init() {
     return
   }
 
-  await loadMeshFromFile(baseDir + '/assets/frame/frame.obj').then((obj)=>meshes.push(obj))
-  await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj)=>meshes.push(obj))
-  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj)=>meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/frame/frame.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => meshes.push(obj))
   vaos = new Array(3)
 
   await loadShaders(shaderDir)
@@ -54,11 +61,18 @@ async function init() {
 
   utils.resizeCanvasToDisplaySize(gl.canvas);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  gl.clearColor(0, 0, 0, 0);
+  gl.clearColor(1, 1, 1, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.enable(gl.DEPTH_TEST);
 
   setupUniforms()
+
+  loadImages(occURLs)
+  loadTextures()
+
+  loadImages(occURLs)
+  loadOcclusions()
+
 
   for (let i = 0; i < meshes.length; i++) {
     fillBuffers(i)
@@ -77,60 +91,21 @@ function main() {
   var cs = 0.5;
   var perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
 
-  var texture1 = gl.createTexture();
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, texture1);
-
-  // Asynchronously load an image
-  var image = new Image();
-  image.src = baseDir + "assets/wheel/wheelSurface_Color.png";
-  image.onload = function () {
-    gl.bindTexture(gl.TEXTURE_2D, texture1);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-    gl.generateMipmap(gl.TEXTURE_2D); 
-  };
-
-  var texture2 = gl.createTexture();
-  gl.activeTexture(gl.TEXTURE1);
-  gl.bindTexture(gl.TEXTURE_2D, texture2);
-
-  var image2 = new Image();
-  image2.src = baseDir + "assets/frame/frameSurface_Color.png";
-  image2.onload = function () {
-    gl.bindTexture(gl.TEXTURE_2D, texture2);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image2);
-
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-    gl.generateMipmap(gl.TEXTURE_2D); 
-  };
-
   drawScene();
 
   function animate() {
     var currentTime = (new Date).getTime();
-    if(lastUpdateTime){
-      var deltaC = (30*(currentTime - lastUpdateTime)) / 1000.0;
-      cx += deltaC;
+    if (lastUpdateTime) {
+      var t = (currentTime - lastUpdateTime) / 1000.0;
     }
-
-    worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0);
-
-    lastUpdateTime = currentTime;               
+    lastUpdateTime = currentTime;
+    g_time += t
 
   }
 
 
   function drawScene() {
-    animate();
-
+    animate()
     utils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
@@ -166,23 +141,34 @@ function main() {
     gl.uniform3fv(eyePosLocation, eyePosition);
 
     for (var i = 0; i < 3; i++) {
+      var worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
+
+      gl.uniform1i(isStandLocation, 0)
+
+      if (i == 0) // frame
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, frame_tex);
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, frame_AO);
+        gl.uniformMatrix4fv(program.tMatrix, gl.FALSE, utils.identityMatrix());
+    if (i == 1){ // stand
+        gl.uniform1i(isStandLocation, 1)
+      } // WHEEEEEEL
+      if (i == 2  ) {
+        var rot = utils.transposeMatrix(createRotMatrix(g_time*0.1))
+        gl.uniformMatrix4fv(program.tMatrix, gl.FALSE, rot);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
+      }
+      gl.uniform1i(textLocation, 0);
+  
       var viewWorldMatrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
       var projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
      
       gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
-      gl.uniform1i(isStandLocation, 0)
 
-      gl.activeTexture(gl.TEXTURE0);
-      if (i == 0) // frame
-        gl.bindTexture(gl.TEXTURE_2D, texture2);
-      if (i == 1){ // stand
-        gl.uniform1i(isStandLocation, 1)
-      } // WHEEEEEEL
-      if (i == 2  ) {
-        gl.bindTexture(gl.TEXTURE_2D, texture1);
-      }
-      gl.uniform1i(textLocation, 0);
-  
       gl.bindVertexArray(vaos[i]);
       gl.drawElements(gl.TRIANGLES, meshes[i].indices.length, gl.UNSIGNED_SHORT, 0 );
   
@@ -197,6 +183,88 @@ async function loadMeshFromFile(path) {
   let str = await utils.get_objstr(path);
   let mesh = new OBJ.Mesh(str);
   return mesh;
+}
+
+async function loadImages(urls) {
+  var imgs = []
+  urls.forEach((url) => {
+    var image = new Image();
+    image.src = url;
+    image.onload = function () {
+      imgs.push(image)
+    };
+
+  })
+}
+
+function loadTextures() {
+  wheel_tex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
+
+  var image = new Image();
+  image.src = baseDir + texturesURLs[0];
+  image.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+
+  frame_tex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, frame_tex);
+
+  var image2 = new Image();
+  image2.src = baseDir + texturesURLs[1];
+  image2.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, frame_tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image2);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+
+}
+
+function loadOcclusions() {
+  wheel_AO = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
+
+  var image = new Image();
+  image.src = baseDir + occURLs[0];
+  image.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+
+  frame_AO = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, frame_AO);
+
+  var image2 = new Image();
+  image2.src = baseDir + occURLs[1];
+  image2.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, frame_AO);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image2);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+
 }
 
 async function loadShaders(path) {
@@ -219,8 +287,10 @@ function setupUniforms() {
   vertexMatrixPositionHandle = gl.getUniformLocation(program, "posMatrix");
 
   textLocation = gl.getUniformLocation(program, "in_texture");
+  AOLocation = gl.getUniformLocation(program, "AO_texture")
 
   isStandLocation = gl.getUniformLocation(program, "isStand");
+  program.tMatrix = gl.getUniformLocation(program, "tMatrix");
 
   // Lights
   lightTypeLocation = gl.getUniformLocation(program, "lightType");
@@ -241,6 +311,7 @@ function setupUniforms() {
   dTexMixLocation = gl.getUniformLocation(program, "DTexMix");
   dToonThLocation = gl.getUniformLocation(program, "DThoonTh");
   eyePosLocation = gl.getUniformLocation(program, "eyePos");
+
 }
 
 function fillBuffers(i) {
@@ -271,6 +342,17 @@ function fillBuffers(i) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.indices), gl.STATIC_DRAW);
 
+}
+
+function createRotMatrix(t){
+	var scale = utils.MakeScaleMatrix(1.0); 	
+
+	var translate_center = utils.MakeTranslateMatrix(0.5, 0.5, 0);	
+	var rotation = utils.MakeRotateZMatrix(360*t);	
+	
+	var rotation_around_center = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
+	var out = utils.multiplyMatrices(rotation_around_center, scale);	
+	return out;
 }
 
 
