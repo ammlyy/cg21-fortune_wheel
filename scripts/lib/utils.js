@@ -653,7 +653,7 @@ var utils={
 			// **k : controls the stretching of the function. The maximum happens at x = 1/k
 		
 				let h = k*x
-				return h * Math.exp(1.0 - h)
+				return h * Math.exp(spinTime - h)
 			}
 	
 	

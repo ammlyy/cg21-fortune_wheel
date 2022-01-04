@@ -38,7 +38,7 @@ var eyePosition = [0.0, 0.0, 0.0];
 
 var g_time = 0;
 var startSpinning = false;
-
+var last_rotation = 0;
 
 async function init() {
   var path = window.location.pathname;
@@ -101,9 +101,13 @@ function main() {
     var currentTime = (new Date).getTime();
     
     if (lastUpdateTime && startSpinning) {
-      var t = (currentTime - lastUpdateTime) / 1000.0
-      g_time += t
-
+      var t =  ( (currentTime - lastUpdateTime) / 1000.0 ) % 1.0
+      g_time += utils.ExponentialImpulse(g_time+t, 2.0) / 60.0
+      console.log(g_time)
+      last_rotation = g_time % 1.00
+    }
+    else{
+      g_time = last_rotation
     }
     lastUpdateTime = currentTime;
 
