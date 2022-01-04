@@ -2,7 +2,7 @@ var gl;
 var program;
 var meshes = [];
 var textures = [];
-var texturesURLs = ['/assets/wheel/wheelSurface_Color.png', '/assets/frame/frameSurface_color.png']
+var texturesURLs = ['/assets/wheel/wheelSurface_Color.png', '/assets/frame/frameSurface_color.png', '/assets/table/tableSurface_color.png']
 var occlusions = []
 const occURLs = ['/assets/wheel/wheelAmbient_Occlusion.png', '/assets/frame/frameAmbient_Occlusion.png']
 
@@ -59,6 +59,7 @@ async function init() {
      meshes.push(obj)
      wheelCenterY = findCenter(obj.vertices)
   })
+  await loadMeshFromFile(baseDir + 'assets/table/table.obj').then((obj)=>meshes.push(obj))
   
   vaos = new Array(3)
 
@@ -103,7 +104,6 @@ function main() {
     if (lastUpdateTime && startSpinning) {
       var t =  ( (currentTime - lastUpdateTime) / 1000.0 )
       g_time += (utils.ExponentialImpulse(g_time+t, 1.0) / 100.0 )
-      console.log(g_time)
       last_rotation = g_time % 1.00
     }
     else{
@@ -123,7 +123,7 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    var viewMatrix = utils.MakeView(0.0, 3.0, 6.0, -5.0, 0.0);
+    var viewMatrix = utils.MakeView(0.0, 7.0, 10.0, -10.0, 0.0);
     eyePosition = [0.0, 3.0, 6.0];
     lightPosition = [
       document.getElementById('lposx').value / 100.0,
@@ -154,7 +154,7 @@ function main() {
 
     gl.uniform3fv(eyePosLocation, eyePosition);
 
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < meshes.length; i++) {
       var worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
 
       gl.uniform1i(isStandLocation, 0)
@@ -173,6 +173,11 @@ function main() {
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
+      }
+      if (i == 3){
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, table_tex);
+
       }
       gl.uniform1i(textLocation, 0);
   
@@ -243,6 +248,24 @@ function loadTextures() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+
+
+    table_tex = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, table_tex);
+  
+    var image3 = new Image();
+    image3.src = baseDir + texturesURLs[2];
+    image3.onload = function () {
+      gl.bindTexture(gl.TEXTURE_2D, table_tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image3);
+  
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+  
 
 }
 
