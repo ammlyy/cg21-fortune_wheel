@@ -14,22 +14,22 @@ var perspectiveMatrix;
 var lightPosition = [20.0, 100.0, 30.0];
 var lightDirection = [0.3, 0.1, 0.7];
 var lightDecay = 1.0;
-var lightType = [1.0, 0.0, 0.0];    //0: direct, 1: point, 2: spot
+var lightType = [0.0, 1.0, 0.0];    //0: direct, 1: point, 2: spot
 var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon
 var specularType = [0.0, 0.0];      //0: Phong, 1: Blinn
-var lightColor = [1.0, 0.0, 0.0, 1.0];
-var diffuseColor = [0.4, 0.3, 0.0, 1.0];
+var lightColor = [1.0, 1.0, 1.0, 1.0];
+var diffuseColor = [1.0, 1.0, 1.0, 1.0];
 var specularColor = [1.0, 0.0,0.0, 1.0];
 var specularShine = 1.0;
 
 var lightTarget = 61.0;   //Distance at which light reduction is 1
 
 var spotLight = {
-  c_in: 40,
-  c_out: 0
+  c_in: 80,
+  c_out: 100
 }
 
-var ambientLightColor = [1.0, 0.1, 0.3, 1.0];
+var ambientLightColor = [0.0, 0.0, 0.0, 1.0];
 var ambientMaterialColor = [1.0, 1.0, 1.0, 1.0];
 var diffuseTexMix = 1.0;      //0: full color, 1: full texture
 var diffuseToonTh = 0.5;
@@ -101,7 +101,6 @@ function main() {
     var currentTime = (new Date).getTime();
     if (lastUpdateTime) {
       var t = (currentTime - lastUpdateTime) / 1000.0;
-      cx += t*5.0
     }
     g_time += t
     lastUpdateTime = currentTime;
@@ -121,9 +120,9 @@ function main() {
     var viewMatrix = utils.MakeView(0.0, 3.0, 6.0, -5.0, 0.0);
     eyePosition = [0.0, 3.0, 6.0];
     lightPosition = [
-      document.getElementById('lposx').value / 10.0,
-      document.getElementById('lposy').value / 10.0 ,
-      document.getElementById('lposz').value / 10.0,
+      document.getElementById('lposx').value / 100.0,
+      document.getElementById('lposy').value / 100.0 ,
+      document.getElementById('lposz').value / 100.0,
     ]
     // Set up lights
     gl.uniform3fv(lightPositionLocation, lightPosition);
@@ -175,6 +174,8 @@ function main() {
       var projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
      
       gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
+      gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(worldMatrix))); 
+
 
       gl.bindVertexArray(vaos[i]);
       gl.drawElements(gl.TRIANGLES, meshes[i].indices.length, gl.UNSIGNED_SHORT, 0 );

@@ -19,6 +19,7 @@ uniform float coneIn;
 uniform float coneOut;
 uniform vec4 diffuseColor;
 
+
 out vec4 outColor;
 
 vec4 computeColor(vec3 lightDir){
@@ -27,7 +28,8 @@ vec4 computeColor(vec3 lightDir){
 
     // Spot
     vec4 spotLightCol = lightColor * 
-                        pow(lightTarget / length(lightPos - fs_pos), 0.0) ;
+                        pow(lightTarget / length(lightPos - fs_pos), 0.0)*
+                        clamp((dot(normalize(lightPos - fs_pos), lightDir) - LCosOut) / (LCosIn - LCosOut), 0.0, 1.0);
 
     return spotLightCol;
 }
