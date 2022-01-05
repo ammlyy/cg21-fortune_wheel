@@ -130,8 +130,8 @@ function main() {
       document.getElementById('lposy').value / 10.0 ,
       document.getElementById('lposz').value / 10.0,
     ]
-    spotLight.c_in = document.getElementById('conein').value
-    spotLight.c_out = document.getElementById('coneout').value
+    spotLight.c_in = document.getElementById('conein').value/100.0
+    spotLight.c_out = document.getElementById('coneout').value/100.0
     lightTarget = document.getElementById('target_distance').value
 
 
