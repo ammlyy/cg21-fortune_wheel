@@ -1,9 +1,9 @@
 const CAMERA_TOP_OMEGA = 105;
 const CAMERA_BOTTOM_OMEGA = 10;
-const CAMERA_SPHERE_RADIUS = 8;
-const MAX_DEPTH = 4.5;
-const MIN_DEPTH = 0.5;
-const Y_DEFAULT = 7;
+const CAMERA_SPHERE_RADIUS = 3.5;
+const MAX_DEPTH = 3;
+const MIN_DEPTH = 0.4;
+const Y_DEFAULT = 5;
 const DELTA = 2
 
 // camera diff vector: updated at event keydown/up and read at each frame
