@@ -20,38 +20,40 @@
 <body>
 
   <div class='container-fluid'> 
-    <div class='row'>
-      <div id='GUI' class='col-3'>
-        <label class="form-label">Pos X</label>
-        <input type="range" class="form-range" id="lposx" max='50' min='-50' value='0'>
+    <div class='row position-relative'>
+      <div class="col-3 position-absolute d-flex justify-content-center" id="gui-container">
+        <div id='GUI' class='row my-auto'>
+          <label class="form-label">Pos X</label>
+          <input type="range" class="form-range" id="lposx" max='50' min='-50' value='0'>
 
-        <label class="form-label">Pos Y</label>
-        <input type="range" class="form-range" id="lposy" max='50' min='-50' value='0'>
+          <label class="form-label">Pos Y</label>
+          <input type="range" class="form-range" id="lposy" max='50' min='-50' value='0'>
 
-        <label class="form-label">Pos Z</label>
-        <input type="range" class="form-range" id="lposz" max='50' min='-50' value='0'>
+          <label class="form-label">Pos Z</label>
+          <input type="range" class="form-range" id="lposz" max='50' min='-50' value='0'>
 
-        <label class="form-label">Cone in</label>
-        <input type="range" class="form-range" id="conein" max='100' min='0' value='30'>
+          <label class="form-label">Cone in</label>
+          <input type="range" class="form-range" id="conein" max='100' min='0' value='30'>
 
-        <label class="form-label">Cone out</label>
-        <input type="range" class="form-range" id="coneout" max='150' min='0' value='80'>
+          <label class="form-label">Cone out</label>
+          <input type="range" class="form-range" id="coneout" max='150' min='0' value='80'>
 
-        <label class="form-label">Target distance</label>
-        <input type="range" class="form-range" id="target_distance" max='100' min='0' value='50'>
-        
-        <div class="dropdown">
-          <select class="btn btn-outline-secondary btn-sm dropdown-toggle" id='lightA''>
-            <option class="dropdown-item" value='direct'>Direct</option>
-            <option class="dropdown-item" value='point'>Point</option>
-            <option class="dropdown-item" value='spot'>Spot</option>
-          </select>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <label class="form-label">Target distance</label>
+          <input type="range" class="form-range" id="target_distance" max='100' min='0' value='50'>
+          
+          <div class="dropdown">
+            <select class="btn btn-outline-secondary btn-sm dropdown-toggle" id='lightA''>
+              <option class="dropdown-item" value='direct'>Direct</option>
+              <option class="dropdown-item" value='point'>Point</option>
+              <option class="dropdown-item" value='spot'>Spot</option>
+            </select>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            </div>
           </div>
+          <button type="button" class="btn btn-primary btn-lg btn-block" onclick='spin()'>Spin the wheel!</button>
         </div>
-        <button type="button" class="btn btn-primary btn-lg btn-block" onclick='spin()'>Spin the wheel!</button>
       </div>
-      <div class='col-9'>
+      <div class='col-9' id='canva-container'>
               <canvas id='canva' ></canvas>
       </div>
     </div>
