@@ -2,7 +2,7 @@ var piano = SampleLibrary.load({
     instruments: "piano"
 });
 
-piano.toMaster();
+piano.toDestination();
 
 function startAudioContext(){
     Tone.start()
