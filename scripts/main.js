@@ -132,7 +132,7 @@ function main() {
     ]
     spotLight.c_in = document.getElementById('conein').value / 100.0
     spotLight.c_out = document.getElementById('coneout').value / 100.0
-    lightTarget = document.getElementById('target_distance').value
+    lightTarget = document.getElementById('target_distance').value / 10.0
 
 
     // Set up lights
