@@ -133,6 +133,7 @@ function main() {
     spotLight.c_in = document.getElementById('conein').value / 100.0
     spotLight.c_out = document.getElementById('coneout').value / 100.0
     lightTarget = document.getElementById('target_distance').value / 10.0
+    lightType = decodeLight(document.getElementById('lightA').value)
 
 
     // Set up lights
@@ -408,6 +409,17 @@ function findCenter(vertices){
   var cy = (max[1] - min[1]) / 2 + min[1]
   return cy;
 
+}
+
+function decodeLight(type){
+  switch(type){
+    case("direct"): return [1, 0, 0]
+    
+    case("point"): return[0, 1, 0]
+
+    case("spot"): return [0, 0, 1]
+    
+  }
 }
 
 
