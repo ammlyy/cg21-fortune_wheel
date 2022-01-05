@@ -60,6 +60,8 @@ async function init() {
      wheelCenterY = findCenter(obj.vertices)
   })
   await loadMeshFromFile(baseDir + 'assets/table/table.obj').then((obj)=>meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/room/room.obj').then((obj) => meshes.push(obj))
+
   
   vaos = new Array(3)
 
@@ -172,7 +174,7 @@ function main() {
         gl.bindTexture(gl.TEXTURE_2D, frame_tex);
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, frame_AO);
-    if (i == 1){ // stand
+    if (i == 1 || i == 4){ // stand and room
         gl.uniform1f(isStandLocation, 1)
       } // WHEEEEEEL
       if (i == 2  ) {
@@ -185,7 +187,6 @@ function main() {
       if (i == 3){
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, table_tex);
-
       }
       gl.uniform1i(textLocation, 0);
   
