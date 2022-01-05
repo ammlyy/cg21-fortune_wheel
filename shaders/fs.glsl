@@ -34,7 +34,7 @@ vec4 computeColor(vec3 lightDir){
 
     // Spot
     vec4 spotLightCol = lightColor * 
-                        pow(lightTarget / length(lightPos - fs_pos), 0.0)*
+                        pow(lightTarget / length(lightPos - fs_pos), lightDecay)*
                         clamp((dot(normalize(lightPos - fs_pos), lightDir) - LCosOut) / (LCosIn - LCosOut), 0.0, 1.0);
 
     return spotLightCol;

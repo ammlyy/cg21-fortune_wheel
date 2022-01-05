@@ -11,7 +11,7 @@ var worldMatrices = []
 var perspectiveMatrix;
 
 // Light parameters
-var lightPosition = [0.0, 70.0, 130.0];
+var lightPosition = [0.0, 20.0, 0.0];
 var lightDirection = [0.3, 0.1, 0.7];
 var lightDecay = 1.0;
 var lightType = [0.0, 1.0, 0.0];    //0: direct, 1: point, 2: spot
@@ -22,11 +22,11 @@ var diffuseColor = [1.0, 1.0, 1.0, 1.0];
 var specularColor = [1.0, 1.0, 1.0, 1.0];
 var specularShine = 150.0;
 
-var lightTarget = 1000.0;   //Distance at which light reduction is 1
+var lightTarget = 60.0;   //Distance at which light reduction is 1
 
 var spotLight = {
   c_in: 20,
-  c_out: 150
+  c_out: 70
 }
 
 var ambientLightColor = [0.2, 0.2, 0.2, 1.0];
@@ -123,13 +123,18 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    var viewMatrix = utils.MakeView(0.0, 7.0, 10.0, -10.0, 0.0);
-    eyePosition = [0.0, 3.0, 6.0];
-    /*lightPosition = [
-      document.getElementById('lposx').value / 100.0,
-      document.getElementById('lposy').value / 100.0 ,
-      document.getElementById('lposz').value / 100.0,
-    ]*/
+    var viewMatrix = utils.MakeView(0.0, 7.0, 10.0, -8.0, 0.0);
+    eyePosition = [0.0, 7.0, 10.0];
+    lightPosition = [
+      document.getElementById('lposx').value / 10.0,
+      document.getElementById('lposy').value / 10.0 ,
+      document.getElementById('lposz').value / 10.0,
+    ]
+    spotLight.c_in = document.getElementById('conein').value
+    spotLight.c_out = document.getElementById('coneout').value
+    lightTarget = document.getElementById('target_distance').value
+
+
     // Set up lights
     gl.uniform3fv(lightPositionLocation, lightPosition);
     gl.uniform3fv(lightDirectionLocation, lightDirection);

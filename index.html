@@ -22,20 +22,29 @@
   <div class='container-fluid'> 
     <div class='row'>
       <div id='GUI' class='col-3'>
-        <label for="customRange1" class="form-label">Pos X</label>
-        <input type="range" class="form-range" id="lposx" max='100' min='-100' value='0'>
+        <label class="form-label">Pos X</label>
+        <input type="range" class="form-range" id="lposx" max='50' min='-50' value='0'>
 
-        <label for="customRange1" class="form-label">Pos Y</label>
-        <input type="range" class="form-range" id="lposy" max='100' min='-100' value='0'>
+        <label class="form-label">Pos Y</label>
+        <input type="range" class="form-range" id="lposy" max='50' min='-50' value='0'>
 
-        <label for="customRange1" class="form-label">Pos Z</label>
-        <input type="range" class="form-range" id="lposz" max='100' min='-100' value='0'>
+        <label class="form-label">Pos Z</label>
+        <input type="range" class="form-range" id="lposz" max='50' min='-50' value='0'>
+
+        <label class="form-label">Cone in</label>
+        <input type="range" class="form-range" id="conein" max='100' min='0' value='30'>
+
+        <label class="form-label">Cone out</label>
+        <input type="range" class="form-range" id="coneout" max='150' min='0' value='80'>
+
+        <label class="form-label">Target distance</label>
+        <input type="range" class="form-range" id="target_distance" max='100' min='0' value='50'>
+
 
         <button type="button" class="btn btn-primary btn-lg btn-block" onclick='spin()'>Spin the wheel!</button>
       </div>
       <div class='col-9'>
               <canvas id='canva' ></canvas>
-
       </div>
     </div>
 </div>
