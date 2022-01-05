@@ -12,9 +12,11 @@ uniform float isStand;
 
 // SPOT lights
 uniform vec3 lightPos; // using as direction
+uniform vec3 lightDir;
 uniform float lightDecay;    
 uniform vec4 lightColor;
 uniform float lightTarget;
+uniform vec3 lightType;  // indexes: 0-direct, 1-point, 2-spot
 uniform float coneIn;
 uniform float coneOut;
 uniform vec4 diffuseColor;
@@ -28,26 +30,33 @@ uniform vec4 specularColor;
 
 out vec4 outColor;
 
+vec3 computeDirection(){
+    // direct
+    vec3 directLightDir = lightDir;
+    // Point
+    vec3 pointLightDir = normalize(lightPos - fs_pos);
+    // Spot
+    vec3 spotLightDir = pointLightDir;
+
+    return directLightDir * lightType.x + pointLightDir * lightType.y + spotLightDir * lightType.z;
+}
+
+
 vec4 computeColor(vec3 lightDir){
     float LCosOut = cos(radians(coneOut / 2.0));
 	float LCosIn = cos(radians(coneOut * coneIn / 2.0));
 
+    // Direct
+    vec4 directLightCol = lightColor;
+    // Point
+    vec4 pointLightCol = lightColor * pow(lightTarget / length(lightPos - fs_pos), lightDecay);
     // Spot
-    vec4 spotLightCol = lightColor * 
-                        pow(lightTarget / length(lightPos - fs_pos), lightDecay)*
+    vec4 spotLightCol = lightColor * pow(lightTarget / length(lightPos - fs_pos), lightDecay) *
                         clamp((dot(normalize(lightPos - fs_pos), lightDir) - LCosOut) / (LCosIn - LCosOut), 0.0, 1.0);
 
-    return spotLightCol;
+    return directLightCol * lightType.x + pointLightCol * lightType.y + spotLightCol * lightType.z;
 }
 
-vec3 computeDirection(){
-    // Spot
-    vec3 spotLightDir = normalize(normalize(lightPos) - fs_pos);
-
-    vec3 DirectLightDir = lightPos;
-
-    return spotLightDir;
-}
 
 vec4 computeDiffuse(vec3 lightDir, vec4 lightCol, vec4 diffColor, vec3 normalVec) {
     float LdotN = max(0.0, dot(normalVec, lightDir));

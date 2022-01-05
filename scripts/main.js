@@ -11,7 +11,7 @@ var worldMatrices = []
 var perspectiveMatrix;
 
 // Light parameters
-var lightPosition = [0.0, 20.0, 0.0];
+var lightPosition = [0.0, 10.0, 0.0];
 var lightDirection = [0.3, 0.1, 0.7];
 var lightDecay = 1.0;
 var lightType = [0.0, 1.0, 0.0];    //0: direct, 1: point, 2: spot
@@ -130,9 +130,10 @@ function main() {
       document.getElementById('lposy').value / 10.0 ,
       document.getElementById('lposz').value / 10.0,
     ]
-    spotLight.c_in = document.getElementById('conein').value/100.0
-    spotLight.c_out = document.getElementById('coneout').value/100.0
-    lightTarget = document.getElementById('target_distance').value
+    spotLight.c_in = document.getElementById('conein').value / 100.0
+    spotLight.c_out = document.getElementById('coneout').value / 100.0
+    lightTarget = document.getElementById('target_distance').value / 10.0
+    lightType = decodeLight(document.getElementById('lightA').value)
 
 
     // Set up lights
@@ -408,6 +409,17 @@ function findCenter(vertices){
   var cy = (max[1] - min[1]) / 2 + min[1]
   return cy;
 
+}
+
+function decodeLight(type){
+  switch(type){
+    case("direct"): return [1, 0, 0]
+    
+    case("point"): return[0, 1, 0]
+
+    case("spot"): return [0, 0, 1]
+    
+  }
 }
 
 
