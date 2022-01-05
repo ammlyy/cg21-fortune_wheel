@@ -123,8 +123,10 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    var viewMatrix = utils.MakeView(0.0, 7.0, 10.0, -8.0, 0.0);
-    eyePosition = [0.0, 7.0, 10.0];
+    var cameraMatrix = utils.LookAt(camera_pos, camera_target, camera_up)
+    let viewMatrix = utils.invertMatrix(cameraMatrix);
+    //var viewMatrix = utils.MakeView(camera_pos.x, camera_pos.y, camera_pos.z, -8.0, 0.0);
+    eyePosition = [camera_pos.x, camera_pos.y, camera_pos.z];
     lightPosition = [
       document.getElementById('lposx').value / 10.0,
       document.getElementById('lposy').value / 10.0 ,
