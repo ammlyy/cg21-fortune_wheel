@@ -11,8 +11,8 @@ var worldMatrices = []
 var perspectiveMatrix;
 
 // Light parameters
-var lightPosition = [0.0, 10.0, 0.0];
-var lightDirection = [0.3, 0.1, 0.7];
+var lightPosition = [0.0, 2.0, 0.0];
+var lightDirection = [0.0, 1.0, 0.0];
 var lightDecay = 1.0;
 var lightType = [0.0, 1.0, 0.0];    //0: direct, 1: point, 2: spot
 var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon

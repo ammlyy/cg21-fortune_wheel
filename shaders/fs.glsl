@@ -86,7 +86,7 @@ vec4 computeAmbient(vec4 ambColor) {
 }
 
 void main(){   
-    vec4 texcol = (1.0 - isStand)*(texture(in_texture, fsUV) * texture(AO_texture, fsUV)) + isStand * vec4(0.2, 0.2, 0.2, 1.0);
+    vec4 texcol = (1.0 - isStand)*(texture(in_texture, fsUV) * texture(AO_texture, fsUV)) + isStand * vec4(0.5, 0.5, 0.5, 1.0);
     vec4 diffColor = diffuseColor*0.1 + texcol*0.9;
     vec4 ambColor = ambientMatColor*0.1 + texcol*0.9;
     vec3 eyedirVec = normalize(eyePos - fs_pos);
