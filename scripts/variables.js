@@ -40,12 +40,12 @@ const colors = [
 ]
 
 const chords = [
-  [0, 3, 7],  // I major
-  [0, 2, 7],  // II minor
-  [0, 2, 7],  // III minor
-  [0, 3, 7],  // IV major
-  [0, 3, 7], // V major
-  [0, 2, 7], // VI minor
+  [0, 4, 7],  // I major
+  [0, 3, 7],  // II minor
+  [0, 3, 7],  // III minor
+  [0, 4, 7],  // IV major
+  [0, 4, 7], // V major
+  [0, 3, 7], // VI minor
   [0, 3, 6] // VII diminished
 ]
 

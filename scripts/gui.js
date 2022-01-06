@@ -22,8 +22,8 @@ function pickSlice(){
     let slice;
     
     
-        if(last > 334.3  && last <= 25.7) {
-            slice = 0
+    if ((last > 334.3 || last > 0) && last <= 25.7) {
+        slice = 0
         } 
 
         else if(last > 25.7 && last <= 77.1){
