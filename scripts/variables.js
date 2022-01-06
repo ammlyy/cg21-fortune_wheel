@@ -54,6 +54,4 @@ var colors = [
     'ff4700', // 9 dark  orange
     'ff0000', // 10 red
     'cf0072', // 11 pink
-
-
 ]
