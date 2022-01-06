@@ -34,12 +34,8 @@ async function init() {
 
   setupUniforms()
 
-  loadImages(occURLs)
   loadTextures()
-
-  loadImages(occURLs)
   loadOcclusions()
-
 
   for (let i = 0; i < meshes.length; i++) {
     fillBuffers(i)
@@ -168,25 +164,13 @@ async function loadMeshFromFile(path) {
   return mesh;
 }
 
-async function loadImages(urls) {
-  var imgs = []
-  urls.forEach((url) => {
-    var image = new Image();
-    image.src = url;
-    image.onload = function () {
-      imgs.push(image)
-    };
-
-  })
-}
-
 function loadTextures() {
   wheel_tex = gl.createTexture();
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
 
   var image = new Image();
-  image.src = baseDir + texturesURLs[0];
+  image.src = baseDir + TEXTURE_URLS[0];
   image.onload = function () {
     gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -202,7 +186,7 @@ function loadTextures() {
   gl.bindTexture(gl.TEXTURE_2D, frame_tex);
 
   var image2 = new Image();
-  image2.src = baseDir + texturesURLs[1];
+  image2.src = baseDir + TEXTURE_URLS[1];
   image2.onload = function () {
     gl.bindTexture(gl.TEXTURE_2D, frame_tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -219,7 +203,7 @@ function loadTextures() {
     gl.bindTexture(gl.TEXTURE_2D, table_tex);
   
     var image3 = new Image();
-    image3.src = baseDir + texturesURLs[2];
+    image3.src = baseDir + TEXTURE_URLS[2];
     image3.onload = function () {
       gl.bindTexture(gl.TEXTURE_2D, table_tex);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -239,7 +223,7 @@ function loadOcclusions() {
   gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
 
   var image = new Image();
-  image.src = baseDir + occURLs[0];
+  image.src = baseDir + OCCLUSION_URLS[0];
   image.onload = function () {
     gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -255,7 +239,7 @@ function loadOcclusions() {
   gl.bindTexture(gl.TEXTURE_2D, frame_AO);
 
   var image2 = new Image();
-  image2.src = baseDir + occURLs[1];
+  image2.src = baseDir + OCCLUSION_URLS[1];
   image2.onload = function () {
     gl.bindTexture(gl.TEXTURE_2D, frame_AO);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
