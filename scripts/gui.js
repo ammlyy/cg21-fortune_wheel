@@ -90,6 +90,6 @@ function pickSlice(){
         } 
 
     
-    lightColor = colors[slice]
+    ambientLightColor = colors[slice]
     piano.triggerAttack(note)
 }
