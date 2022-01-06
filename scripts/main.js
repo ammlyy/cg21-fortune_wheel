@@ -84,47 +84,43 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    var cameraMatrix = utils.LookAt(camera_pos, camera_target, camera_up)
+    let cameraMatrix = utils.LookAt(camera_pos, camera_target, camera_up)
     let viewMatrix = utils.invertMatrix(cameraMatrix);
-    //var viewMatrix = utils.MakeView(camera_pos.x, camera_pos.y, camera_pos.z, -8.0, 0.0);
-    eyePosition = [camera_pos.x, camera_pos.y, camera_pos.z];
-    lightPosition = [
+    let eyePosition = [camera_pos.x, camera_pos.y, camera_pos.z];
+    
+    // LIGHT PARAMS
+    let lightPosition = [
       document.getElementById('lposx').value / 10.0,
-      document.getElementById('lposy').value / 10.0 ,
+      document.getElementById('lposy').value / 10.0,
       document.getElementById('lposz').value / 10.0,
     ]
-    spotLight.c_in = document.getElementById('conein').value / 100.0
-    spotLight.c_out = document.getElementById('coneout').value / 100.0
-    lightTarget = document.getElementById('target_distance').value / 10.0
-    lightType = decodeLight(document.getElementById('lightA').value)
+    let lightDirection = getLightDirection()
+    let coneIn = document.getElementById('conein').value / 100.0
+    let coneOut = document.getElementById('coneout').value / 100.0
+    let lightTarget = document.getElementById('target_distance').value / 10.0
+    let lightType = decodeLight(document.getElementById('lightA').value)
 
 
-    // Set up lights
+    // Passing light variable uniforms
+    gl.uniform3fv(lightTypeLocation, lightType);
     gl.uniform3fv(lightPositionLocation, lightPosition);
     gl.uniform3fv(lightDirectionLocation, lightDirection);
-    gl.uniform1f(lightDecayLocation, lightDecay);
-    gl.uniform3fv(lightTypeLocation, lightType);
-    gl.uniform2fv(diffuseTypeLocation, diffuseType);
-    gl.uniform2fv(specularTypeLocation, specularType);
-    gl.uniform4fv(lightColorLocation, lightColor);
-    gl.uniform4fv(diffuseColorLocation, diffuseColor);
-    gl.uniform1f(dTexMixLocation, diffuseTexMix);
-    gl.uniform1f(dToonThLocation, diffuseToonTh);
-    gl.uniform4fv(specularColorLocation, specularColor);
-    gl.uniform1f(specularShineLocation, specularShine);
-
     gl.uniform1f(lightTargetLocation, lightTarget);
-
-    gl.uniform1f(coneInLocation, spotLight.c_in);
-    gl.uniform1f(coneOutLocation, spotLight.c_out);
-
-    gl.uniform4fv(ambientLightColorLocation, ambientLightColor);
-    gl.uniform4fv(ambientMaterialColorLocation, ambientMaterialColor);
-
+    gl.uniform1f(coneInLocation, coneIn);
+    gl.uniform1f(coneOutLocation, coneOut);
     gl.uniform3fv(eyePosLocation, eyePosition);
 
-    for (var i = 0; i < meshes.length; i++) {
-      var worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
+    // Passing light constant uniforms
+    gl.uniform1f(lightDecayLocation, LIGHT_DECAY);
+    gl.uniform4fv(lightColorLocation, LIGHT_COLOR);
+    gl.uniform4fv(diffuseColorLocation, DIFFUSE_COLOR);
+    gl.uniform4fv(specularColorLocation, SPECULAR_COLOR);
+    gl.uniform1f(specularShineLocation, SPECULAR_SHINE);
+    gl.uniform4fv(ambientLightColorLocation, AMBIENT_LIGHT_COLOR);
+    gl.uniform4fv(ambientMaterialColorLocation, AMBIENT_MATERIAL_COLOR);
+
+    for (let i = 0; i < meshes.length; i++) {
+      let worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
 
       gl.uniform1f(isStandLocation, 0)
 
@@ -149,8 +145,8 @@ function main() {
       }
       gl.uniform1i(textLocation, 0);
   
-      var viewWorldMatrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
-      var projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
+      let viewWorldMatrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
+      let projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
      
       gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
       gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(worldMatrix))); 
@@ -301,8 +297,6 @@ function setupUniforms() {
   lightPositionLocation = gl.getUniformLocation(program, "lightPos");
   lightDirectionLocation = gl.getUniformLocation(program, "lightDir");
   lightDecayLocation = gl.getUniformLocation(program, "lightDecay");
-  diffuseTypeLocation = gl.getUniformLocation(program, "diffuseType");
-  specularTypeLocation = gl.getUniformLocation(program, "specularType");
   specularShineLocation = gl.getUniformLocation(program, "SpecShine")
   lightColorLocation = gl.getUniformLocation(program, "lightColor");
   diffuseColorLocation = gl.getUniformLocation(program, "diffuseColor");
@@ -312,8 +306,6 @@ function setupUniforms() {
   coneOutLocation = gl.getUniformLocation(program, "coneOut");
   ambientLightColorLocation = gl.getUniformLocation(program, "ambientLightColor");
   ambientMaterialColorLocation = gl.getUniformLocation(program, "ambientMatColor");
-  dTexMixLocation = gl.getUniformLocation(program, "DTexMix");
-  dToonThLocation = gl.getUniformLocation(program, "DThoonTh");
   eyePosLocation = gl.getUniformLocation(program, "eyePos");
 
 }
@@ -380,9 +372,14 @@ function decodeLight(type){
     case("point"): return[0, 1, 0]
 
     case("spot"): return [0, 0, 1]
-    
   }
 }
 
+function getLightDirection() {
+  let theta = utils.degToRad(document.getElementById('dirTheta').value);
+  let phi = utils.degToRad(document.getElementById('dirPhi').value);
+
+  return [Math.sin(theta)*Math.sin(phi), Math.cos(theta), Math.sin(theta)*Math.cos(phi)]
+}
 
 window.onload = init;  

@@ -1,3 +1,16 @@
+// Light constants
+const LIGHT_DECAY = 1.0;
+const LIGHT_COLOR = [1.0, 1.0, 1.0, 1.0];
+const DIFFUSE_COLOR = [1.0, 1.0, 1.0, 1.0];
+const SPECULAR_COLOR = [1.0, 1.0, 1.0, 1.0];
+const SPECULAR_SHINE = 150.0;
+const AMBIENT_LIGHT_COLOR = [0.2, 0.2, 0.2, 1.0];
+const AMBIENT_MATERIAL_COLOR = [1.0, 1.0, 1.0, 1.0];
+
+var g_time = 0;
+var startSpinning = false;
+var last_rotation = 0;
+
 var gl;
 var program;
 var meshes = [];
@@ -5,41 +18,6 @@ var textures = [];
 var texturesURLs = ['/assets/wheel/wheelSurface_Color.png', '/assets/frame/frameSurface_color.png', '/assets/table/tableSurface_color.png']
 var occlusions = []
 const occURLs = ['/assets/wheel/wheelAmbient_Occlusion.png', '/assets/frame/frameAmbient_Occlusion.png']
-
-var viewMatrix;
-var worldMatrices = []
-var perspectiveMatrix;
-
-// Light parameters
-var lightPosition = [0.0, 2.0, 0.0];
-var lightDirection = [0.0, 1.0, 0.0];
-var lightDecay = 1.0;
-var lightType = [0.0, 1.0, 0.0];    //0: direct, 1: point, 2: spot
-var diffuseType = [0.0, 0.0];       //0: Lambert, 1: Toon
-var specularType = [0.0, 0.0];      //0: Phong, 1: Blinn
-var lightColor = [1.0, 1.0, 1.0, 1.0];
-var diffuseColor = [1.0, 1.0, 1.0, 1.0];
-var specularColor = [1.0, 1.0, 1.0, 1.0];
-var specularShine = 150.0;
-
-var lightTarget = 60.0;   //Distance at which light reduction is 1
-
-var spotLight = {
-  c_in: 20,
-  c_out: 70
-}
-
-var ambientLightColor = [0.2, 0.2, 0.2, 1.0];
-var ambientMaterialColor = [1.0, 1.0, 1.0, 1.0];
-var diffuseTexMix = 1.0;      //0: full color, 1: full texture
-var diffuseToonTh = 0.5;
-
-var eyePosition = [0.0, 0.0, 0.0];
-
-var g_time = 0;
-var startSpinning = false;
-var last_rotation = 0;
-
 
 var colors = [
     [0.411, 0.141, 0.596, 1.0], // 0 purple
