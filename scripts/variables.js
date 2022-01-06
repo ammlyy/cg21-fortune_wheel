@@ -41,7 +41,7 @@ var startSpinning = false;
 var last_rotation = 0;
 
 
-var colors = [
+const colors = [
 
   [1, 0.482, 0, 1.0], // 0 orange
   [1, 0.05, 0, 1.0], // 1 red
@@ -53,14 +53,14 @@ var colors = [
 ]
 
 
-var chords = [
+const chords = [
   [0, 3, 7],  // I major
-  [0, 2, 7],
-  [0, 2, 7],
-  [0, 3, 7],
-  [0, 3, 7],
+  [0, 2, 7],  // II minor
+  [0, 2, 7],  // III minor
+  [0, 3, 7],  // IV major
+  [0, 3, 7], // V major
   [0, 2, 7], // VI minor
   [0, 3, 6] // VII diminished
 ]
 
-var degree = [0, 2, 4, 5, 7, 9, 11] // major
+const degree = [0, 2, 4, 5, 7, 9, 11] // major
