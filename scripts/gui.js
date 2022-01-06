@@ -1,4 +1,7 @@
 var spinTime;
+progression = []
+root = 'C4'
+subdivision = 51.4
 
 function spin(){
     startAudioContext();        // Defined in audio.js
@@ -17,79 +20,42 @@ function spin(){
 function pickSlice(){
     let last = 360.0 - last_rotation * 360; // the spinning goes clockwise, so the rotation must be inverted
     let slice;
-    let note;
     
     
-        if(last > 345 && last <= 15) {
+        if(last > 334.3  && last <= 25.7) {
             slice = 0
-            note = 'C3'
         } 
 
-        else if(last > 15 && last <= 45){
+        else if(last > 25.7 && last <= 77.1){
             slice = 1
-            note = 'C#3'
         }
 
-        else if(last > 45 && last <= 75){
+        else if(last > 77.1 && last <= 128.5){
             slice = 2
-            note = 'D3'
 
         }
 
-        else if(last > 75 && last <= 105){
+        else if(last > 128.5 && last <= 180){
             slice = 3
-            note = 'D#3'
 
         }
 
-        else if(last > 105 && last <= 135){
+        else if(last > 180 && last <= 231.4){
             slice = 4
-            note = 'E3'
 
         }
 
-        else if(last > 135 && last <= 165){
-            slice = 4
-            note = 'F3'
+        else if(last > 231.4 && last <= 282.7){
+            slice = 5
 
         }
        
-        else if(last > 165 && last <= 195){
-            slice = 5
-            note = 'F#3'
-        } 
-
-        else if(last > 195 && last <= 225){
+        else if(last > 282.7 && last <= 334.3){
             slice = 6
-            note = 'G3'
         } 
 
-        else if(last > 195 && last <= 225){
-            slice = 7
-            note = 'G#3'
-        } 
-
-        else if(last > 225 && last <= 255){
-            slice = 8
-            note = 'A3'
-        } 
-
-        else if(last > 255 && last <= 285){
-            slice = 9
-            note = 'A#3'
-        } 
-
-        else if(last > 285 && last <= 315){
-            slice = 10
-            note = 'B3'
-        } 
-
-        else if(last > 315 && last <= 345){
-            slice = 11
-            note = 'C4'
-        } 
 
     
     ambientLightColor = colors[slice]
-    piano.triggerAttack(note)
+    playChord(slice)
 }
