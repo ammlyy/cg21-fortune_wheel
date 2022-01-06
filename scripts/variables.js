@@ -42,16 +42,16 @@ var last_rotation = 0;
 
 
 var colors = [
-    '692498', // 0 purple
-    '1e369e', // 1 blue
-    '006fbe', // 2 azure
-    '00a7bc', // 3 turqoise
-    '00ab60', // 4 dark green
-    '9cd22d', // 5 light green
-    'fff200', // 6 yellow
-    'ffac00', // 7 light orange
-    'ff7b00', // 8 orange
-    'ff4700', // 9 dark  orange
-    'ff0000', // 10 red
-    'cf0072', // 11 pink
+    [0.411, 0.141, 0.596, 1.0], // 0 purple
+    [0.117, 0.211, 0.619, 1.0], // 1 blue
+    [0, 0.435, 0.745, 1.0], // 2 azure
+    [0, 0.654, 0.737, 1.0], // 3 turqoise
+    [0, 0.670, 0.376, 1.0], // 4 dark green
+    [0.611, 0.823, 0.176, 1.0], // 5 light green
+    [1, 0.949, 0, 1.0], // 6 yellow
+    [1, 0.674, 0, 1.0], // 7 light orange
+    [1, 0.482, 0, 1.0], // 8 orange
+    [1, 0.278, 0, 1.0], // 9 dark  orange
+    [1, 0.05, 0, 1.0], // 10 red
+    [0.811, 0, 0.447, 1.0] // 11 pink
 ]

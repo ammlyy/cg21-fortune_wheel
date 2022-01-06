@@ -53,9 +53,9 @@ document.addEventListener('keydown', (e) => {
     camera_pos[1] = Y_DEFAULT + radius * Math.cos(utils.degToRad(camera_angles.omega));
     camera_pos[2] = radius * Math.sin(utils.degToRad(camera_angles.omega)) * Math.sin(utils.degToRad(camera_angles.phi));
 
-    console.log(camera_pos[0])
+    /*console.log(camera_pos[0])
     console.log(camera_pos[1])
-    console.log(camera_pos[2])
+    console.log(camera_pos[2])*/
 
     camera_diff.x = 0;
     camera_diff.y = 0;
