@@ -1,6 +1,13 @@
-// Light constants
-const LIGHT_DECAY = 1.0;
-const LIGHT_COLOR = [1.0, 1.0, 1.0, 1.0];
+// LIGHT CONSTANTS
+const LA_DECAY = 1.0;
+const LA_COLOR = [1.0, 1.0, 1.0, 1.0];
+
+// Secondary light is fixed point light in the back with color changing according to the wheel result
+const LB_TYPE = [0.0, 1.0, 0.0];
+const LB_POSITION = [0.0, 15.0, -15.0];
+const LB_TARGET = 30.0;
+const LB_DECAY = 1.0;
+
 const DIFFUSE_COLOR = [1.0, 1.0, 1.0, 1.0];
 const SPECULAR_COLOR = [1.0, 1.0, 1.0, 1.0];
 const SPECULAR_SHINE = 150.0;
@@ -11,6 +18,7 @@ const AMBIENT_MATERIAL_COLOR = [1.0, 1.0, 1.0, 1.0];
 const TEXTURE_URLS = ['/assets/wheel/wheelSurface_Color.png', '/assets/frame/frameSurface_color.png', '/assets/table/tableSurface_color.png']
 const OCCLUSION_URLS = ['/assets/wheel/wheelAmbient_Occlusion.png', '/assets/frame/frameAmbient_Occlusion.png']
 
+var LBColor = [1.0, 1.0, 1.0, 1.0];   
 var g_time = 0;
 var startSpinning = false;
 var last_rotation = 0;

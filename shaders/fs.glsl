@@ -10,29 +10,37 @@ uniform sampler2D AO_texture;
 
 uniform float isStand;
 
-// SPOT lights
-uniform vec3 lightPos; // using as direction
-uniform vec3 lightDir;
-uniform float lightDecay;    
-uniform vec4 lightColor;
-uniform float lightTarget;
-uniform vec3 lightType;  // indexes: 0-direct, 1-point, 2-spot
-uniform float coneIn;
-uniform float coneOut;
+// Primary light
+uniform vec3 LAType;        // indexes: 0-direct, 1-point, 2-spot
+uniform vec3 LAPos;
+uniform vec3 LADir;
+uniform vec4 LACol;
+uniform float LATarget;
+uniform float LADecay;
+uniform float LAConeIn;
+uniform float LAConeOut;
+
+// Secondary light (fixed point light)
+uniform vec3 LBType;
+uniform vec3 LBPos;
+uniform vec4 LBCol;
+uniform float LBTarget;
+uniform float LBDecay;
+
+// Shared parameters
 uniform vec4 diffuseColor;
+uniform vec4 specularColor;
+uniform float SpecShine;
+uniform vec3 eyePos;
 
 uniform vec4 ambientLightColor;
 uniform vec4 ambientMatColor;
 
-uniform vec3 eyePos;
-uniform float SpecShine;
-uniform vec4 specularColor;
-
 out vec4 outColor;
 
-vec3 computeDirection(){
+vec3 computeDirection(vec3 lightType, vec3 lightPos){
     // direct
-    vec3 directLightDir = lightDir;
+    vec3 directLightDir = LADir;
     // Point
     vec3 pointLightDir = normalize(lightPos - fs_pos);
     // Spot
@@ -42,16 +50,16 @@ vec3 computeDirection(){
 }
 
 
-vec4 computeColor(vec3 lightDir){
-    float LCosOut = cos(radians(coneOut / 2.0));
-	float LCosIn = cos(radians(coneOut * coneIn / 2.0));
+vec4 computeColor(vec3 lightType, vec3 lightDir, vec3 lightPos, vec4 lightCol, float lightTarget, float lightDecay){
+    float LCosOut = cos(radians(LAConeOut / 2.0));
+	float LCosIn = cos(radians(LAConeOut * LAConeIn / 2.0));
 
     // Direct
-    vec4 directLightCol = lightColor;
+    vec4 directLightCol = lightCol;
     // Point
-    vec4 pointLightCol = lightColor * pow(lightTarget / length(lightPos - fs_pos), lightDecay);
+    vec4 pointLightCol = lightCol * pow(lightTarget / length(lightPos - fs_pos), lightDecay);
     // Spot
-    vec4 spotLightCol = lightColor * pow(lightTarget / length(lightPos - fs_pos), lightDecay) *
+    vec4 spotLightCol = lightCol * pow(lightTarget / length(lightPos - fs_pos), lightDecay) *
                         clamp((dot(normalize(lightPos - fs_pos), lightDir) - LCosOut) / (LCosIn - LCosOut), 0.0, 1.0);
 
     return directLightCol * lightType.x + pointLightCol * lightType.y + spotLightCol * lightType.z;
@@ -91,11 +99,23 @@ void main(){
     vec4 ambColor = ambientMatColor*0.1 + texcol*0.9;
     vec3 eyedirVec = normalize(eyePos - fs_pos);
 
-    vec3 lightDirection = computeDirection();
-    vec4 lightColor = computeColor(lightDirection);
+    // Primary light 
+    vec3 LADirection = computeDirection(LAType, LAPos);
+    vec4 LAColor = computeColor(LAType, LADirection, LAPos, LACol, LATarget, LADecay);
 
-    vec4 diffuse = computeDiffuse(lightDirection, lightColor, diffColor, normalize(fsNormal));
-    vec4 specular = computeSpecular(lightDirection, lightColor, normalize(fsNormal), eyedirVec);
+    // Secondary light
+    vec3 LBDirection = computeDirection(LBType, LBPos);
+    vec4 LBColor = computeColor(LBType, LBDirection, LBPos, LBCol, LBTarget, LBDecay);
+
+    // Diffuse
+    vec4 diffuse = computeDiffuse(LADirection, LAColor, diffColor, normalize(fsNormal)) + 
+                   computeDiffuse(LBDirection, LBColor, diffColor, normalize(fsNormal));
+
+    // Specular
+    vec4 specular = computeSpecular(LADirection, LAColor, normalize(fsNormal), eyedirVec) + 
+                    computeSpecular(LBDirection, LBColor, normalize(fsNormal), eyedirVec);
+
+    // Ambient
     vec4 ambient = computeAmbient(ambColor);
 
     outColor = vec4(clamp(diffuse + specular + ambient, 0.0, 1.0).rgb, 1.0);

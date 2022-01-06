@@ -54,6 +54,6 @@ function pickSlice(){
             slice = 6
         } 
     
-    ambientLightColor = colors[slice]
+    LBColor = colors[slice]
     playChord(slice)
 }

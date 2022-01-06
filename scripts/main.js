@@ -85,33 +85,41 @@ function main() {
     let eyePosition = [camera_pos.x, camera_pos.y, camera_pos.z];
     
     // LIGHT PARAMS
-    let lightPosition = [
+    let LAPosition = [
       document.getElementById('lposx').value / 10.0,
       document.getElementById('lposy').value / 10.0,
       document.getElementById('lposz').value / 10.0,
     ]
-    let lightDirection = getLightDirection()
-    let coneIn = document.getElementById('conein').value / 100.0
-    let coneOut = document.getElementById('coneout').value / 100.0
-    let lightTarget = document.getElementById('target_distance').value / 10.0
-    let lightType = decodeLight(document.getElementById('lightA').value)
+    let LADirection = getLightDirection()
+    let LAConeIn = document.getElementById('conein').value / 100.0
+    let LAConeOut = document.getElementById('coneout').value / 100.0
+    let LATarget = document.getElementById('target_distance').value / 10.0
+    let LAType = decodeLight(document.getElementById('lightA').value)
 
 
-    // Passing light variable uniforms
-    gl.uniform3fv(lightTypeLocation, lightType);
-    gl.uniform3fv(lightPositionLocation, lightPosition);
-    gl.uniform3fv(lightDirectionLocation, lightDirection);
-    gl.uniform1f(lightTargetLocation, lightTarget);
-    gl.uniform1f(coneInLocation, coneIn);
-    gl.uniform1f(coneOutLocation, coneOut);
-    gl.uniform3fv(eyePosLocation, eyePosition);
+    // Passing primary light uniforms
+    gl.uniform3fv(LATypeLocation, LAType);
+    gl.uniform3fv(LAPositionLocation, LAPosition);
+    gl.uniform3fv(LADirectionLocation, LADirection);
+    gl.uniform1f(LATargetLocation, LATarget);
+    gl.uniform1f(LAConeInLocation, LAConeIn);
+    gl.uniform1f(LAConeOutLocation, LAConeOut);
+    gl.uniform1f(LADecayLocation, LA_DECAY);
+    gl.uniform4fv(LAColorLocation, LA_COLOR);
+
+    // Passing secondary light uniforms
+    gl.uniform3fv(LBTypeLocation, LB_TYPE);
+    gl.uniform3fv(LBPositionLocation, LB_POSITION);
+    gl.uniform1f(LBTargetLocation, LB_TARGET);
+    gl.uniform1f(LBDecayLocation, LB_DECAY);
+    gl.uniform4fv(LBColorLocation, LBColor);
 
     // Passing light constant uniforms
-    gl.uniform1f(lightDecayLocation, LIGHT_DECAY);
-    gl.uniform4fv(lightColorLocation, LIGHT_COLOR);
     gl.uniform4fv(diffuseColorLocation, DIFFUSE_COLOR);
     gl.uniform4fv(specularColorLocation, SPECULAR_COLOR);
     gl.uniform1f(specularShineLocation, SPECULAR_SHINE);
+    gl.uniform3fv(eyePosLocation, eyePosition);
+
     gl.uniform4fv(ambientLightColorLocation, AMBIENT_LIGHT_COLOR);
     gl.uniform4fv(ambientMaterialColorLocation, AMBIENT_MATERIAL_COLOR);
 
@@ -276,21 +284,32 @@ function setupUniforms() {
 
   isStandLocation = gl.getUniformLocation(program, "isStand");
 
-  // Lights
-  lightTypeLocation = gl.getUniformLocation(program, "lightType");
-  lightPositionLocation = gl.getUniformLocation(program, "lightPos");
-  lightDirectionLocation = gl.getUniformLocation(program, "lightDir");
-  lightDecayLocation = gl.getUniformLocation(program, "lightDecay");
-  specularShineLocation = gl.getUniformLocation(program, "SpecShine")
-  lightColorLocation = gl.getUniformLocation(program, "lightColor");
+  // Primary light
+  LATypeLocation = gl.getUniformLocation(program, "LAType");
+  LAPositionLocation = gl.getUniformLocation(program, "LAPos");
+  LADirectionLocation = gl.getUniformLocation(program, "LADir");
+  LAColorLocation = gl.getUniformLocation(program, "LACol");
+  LATargetLocation = gl.getUniformLocation(program, "LATarget");
+  LADecayLocation = gl.getUniformLocation(program, "LADecay");
+  LAConeInLocation = gl.getUniformLocation(program, "LAConeIn");
+  LAConeOutLocation = gl.getUniformLocation(program, "LAConeOut");
+
+  // Secondary light
+  LBTypeLocation = gl.getUniformLocation(program, "LBType");
+  LBPositionLocation = gl.getUniformLocation(program, "LBPos");
+  LBDirectionLocation = gl.getUniformLocation(program, "LBDir");
+  LBColorLocation = gl.getUniformLocation(program, "LBCol");
+  LBTargetLocation = gl.getUniformLocation(program, "LBTarget");
+  LBDecayLocation = gl.getUniformLocation(program, "LBDecay");
+
+  // Shared parameters
   diffuseColorLocation = gl.getUniformLocation(program, "diffuseColor");
   specularColorLocation = gl.getUniformLocation(program, "specularColor");
-  lightTargetLocation = gl.getUniformLocation(program, "lightTarget");
-  coneInLocation = gl.getUniformLocation(program, "coneIn");
-  coneOutLocation = gl.getUniformLocation(program, "coneOut");
+  specularShineLocation = gl.getUniformLocation(program, "SpecShine")
+  eyePosLocation = gl.getUniformLocation(program, "eyePos");
+
   ambientLightColorLocation = gl.getUniformLocation(program, "ambientLightColor");
   ambientMaterialColorLocation = gl.getUniformLocation(program, "ambientMatColor");
-  eyePosLocation = gl.getUniformLocation(program, "eyePos");
 
 }
 
