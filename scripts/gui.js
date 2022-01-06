@@ -53,8 +53,6 @@ function pickSlice(){
         else if(last > 282.7 && last <= 334.3){
             slice = 6
         } 
-
-
     
     ambientLightColor = colors[slice]
     playChord(slice)
