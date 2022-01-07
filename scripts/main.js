@@ -15,11 +15,17 @@ async function init() {
   await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => {
     meshes.push(obj)
-    wheelCenterY = findCenter(obj.vertices)
+    wheelCenter = findCenter(obj.vertices)
+    console.log(wheelCenter)
   })
   await loadMeshFromFile(baseDir + 'assets/table/table.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/room/room.obj').then((obj) => meshes.push(obj))
-  await loadMeshFromFile(baseDir + '/assets/button/button.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/button/base.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/button/button.obj').then((obj) => {
+    meshes.push(obj)
+    buttonCenter = findCenter(obj.vertices)
+  }
+    )
 
 
 
@@ -134,24 +140,34 @@ function main() {
       gl.bindTexture(gl.TEXTURE_2D, frame_tex);
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, frame_AO);
+
       if (i == 1 || i == 4) { // stand and room
         gl.uniform1f(isStandLocation, 1)
-      } // WHEEEEEEL
-      if (i == 2) {
+      } 
+      if (i == 2) { // wheel
         worldMatrix = utils.multiplyMatrices(worldMatrix, createRotMatrix(g_time))
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
       }
-      if (i == 3) {
+
+      if (i == 3) { // table
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, table_tex);
       }
-      if (i == 5) {
+
+      if (i == 5) { // button  base
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, button_tex);
 
+      }
+
+      if (i == 6){ // button
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, button_tex);
+        worldMatrix = utils.multiplyMatrices(worldMatrix, 
+         createScaleButton(sz) )
       }
       gl.uniform1i(textLocation, 0);
 
@@ -374,12 +390,22 @@ function fillBuffers(i) {
 
 function createRotMatrix(t) {
 
-  var translate_center = utils.MakeTranslateMatrix(0, wheelCenterY, 0);
+  var translate_center = utils.MakeTranslateMatrix(0, wheelCenter.y, 0);
   var rotation = utils.MakeRotateZMatrix(t * 360);
 
 
   var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
   return out;
+}
+
+function createScaleButton(f){
+  var translate_center = utils.MakeTranslateMatrix(buttonCenter.x, buttonCenter.y, 0);
+  var rotation = utils.MakeScaleNonUniform(1.0, f, 1.0);
+
+  var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
+  return out;
+
+
 }
 
 function findCenter(vertices) {
@@ -390,10 +416,14 @@ function findCenter(vertices) {
       const v = vertices[i + j];
       min[j] = Math.min(v, min[j]);
       max[j] = Math.max(v, max[j]);
-    }
+    }     
+
   }
-  var cy = (max[1] - min[1]) / 2 + min[1]
-  return cy;
+  return {
+    x: (max[0] - min[0]) / 2 + min[0],
+    y: (max[1] - min[1]) / 2 + min[1],
+    z: (max[2] - min[2]) / 2 + min[2]
+  };
 
 }
 
