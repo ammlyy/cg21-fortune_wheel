@@ -45,3 +45,13 @@ label{
 #canva-container{
     padding: 0px;
 }
+
+.progression{
+    margin-left: 5%;
+}
+
+.chord{
+    width: 5em;
+    height: 5em;
+    margin: 5%;
+}

@@ -49,4 +49,15 @@ const chords = [
   [0, 3, 6] // VII diminished
 ]
 
+const CHORDS_text = [
+  "I maj",
+  "II min",
+  "III min",
+  "IV maj",
+  "V maj",
+  "VI min",
+  "VII dim",
+]
+
 const degree = [0, 2, 4, 5, 7, 9, 11] // major
+const ROOTS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']

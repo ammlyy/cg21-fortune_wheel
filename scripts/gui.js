@@ -1,13 +1,19 @@
 var spinTime;
-progression = []
-root = 'C4'
-subdivision = 51.4
+index = 0
+slice = 0
+html_chords = [
+    document.getElementById('chord1'),
+    document.getElementById('chord2'),
+    document.getElementById('chord3'),
+    document.getElementById('chord4')
+]
 
 function spin(){
     startAudioContext();        // Defined in audio.js
 
     startSpinning = true;
     spinTime = (Math.random() * 2.0 + 5.0)
+    sampler.triggerAttackRelease('C3', spinTime)
 
     setTimeout(()=>{
         startSpinning = false;
@@ -56,4 +62,18 @@ function pickSlice(){
     
     LBColor = colors[slice]
     playChord(slice)
+    updateProgression(slice)
+    if(index == 4){
+        progression = []
+        index=0
+    }
+    index++
+
 }
+
+function updateProgression(slice){
+    html_chords[index].children[0].innerText = CHORDS_text[slice]
+    html_chords[index].style.background = "rgb(" + LBColor[0]*255 + "," + LBColor[1]*255 + "," + LBColor[2]*255 + ")"
+}
+
+  
