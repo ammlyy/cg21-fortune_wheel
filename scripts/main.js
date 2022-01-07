@@ -81,7 +81,7 @@ function main() {
     gl.enable(gl.CULL_FACE);
 
     let cameraMatrix = utils.LookAt(camera_pos, camera_target, camera_up)
-    let viewMatrix = utils.invertMatrix(cameraMatrix);
+    viewMatrix = utils.invertMatrix(cameraMatrix);
     let eyePosition = [camera_pos.x, camera_pos.y, camera_pos.z];
     
     // LIGHT PARAMS
@@ -124,7 +124,7 @@ function main() {
     gl.uniform4fv(ambientMaterialColorLocation, AMBIENT_MATERIAL_COLOR);
 
     for (let i = 0; i < meshes.length; i++) {
-      let worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
+      worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, cx, cy, cz, 1.0)
 
       gl.uniform1f(isStandLocation, 0)
 
@@ -150,7 +150,7 @@ function main() {
       gl.uniform1i(textLocation, 0);
   
       let viewWorldMatrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
-      let projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
+      projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
      
       gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
       gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(worldMatrix))); 
@@ -385,4 +385,27 @@ function getLightDirection() {
   return [Math.sin(theta)*Math.sin(phi), Math.cos(theta), Math.sin(theta)*Math.cos(phi)]
 }
 
+// Returns the direction of the ray from camera to clicked point in World Coordinates. 
+function getWorldRay(x, y) {
+
+  // Passing to normalized screen coordinates
+  let normX = 2.0*x / gl.canvas.width - 1.0;
+  let normY = 1.0 - 2.0*y / gl.canvas.height;
+
+  // Passing to homogeneous clip coordinates (z is -1 because it's in the forward direction)
+  let rayClip = [normX, normY, -1.0, 1.0];
+
+  // Passing to Camera Coordinates
+  let rayEye = utils.multiplyMatrixVector(utils.invertMatrix(projectionMatrix), rayClip);
+  rayEye = [rayEye[0], rayEye[1], -1.0, 0.0];
+
+  // Passing to World Coordinates
+  let rayWorld = utils.multiplyMatrixVector(utils.invertMatrix(viewMatrix), rayEye).slice(0, 3);
+
+  return utils.normalize(rayWorld);
+}
+
+document.addEventListener("click", (e) => {
+  let worldRay = getWorldRay(e.clientX, e.clientY)
+});
 window.onload = init;  
