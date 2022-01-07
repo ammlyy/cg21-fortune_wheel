@@ -14,7 +14,11 @@ function spin(){
     startSpinning = true;
     spinTime = (Math.random() * 2.0 + 5.0)
     sampler.triggerAttackRelease('C3', spinTime)
-
+    if(index == 4){
+        progression = []
+        index=0
+        clearProgression()
+    }
     setTimeout(()=>{
         startSpinning = false;
         pickSlice()
@@ -24,9 +28,7 @@ function spin(){
 }
 
 function pickSlice(){
-    let last = 360.0 - last_rotation * 360; // the spinning goes clockwise, so the rotation must be inverted
-    let slice;
-    
+    let last = 360.0 - last_rotation * 360; // the spinning goes clockwise, so the rotation must be inverted    
     
     if ((last > 334.3 || last > 0) && last <= 25.7) {
         slice = 0
@@ -63,10 +65,7 @@ function pickSlice(){
     LBColor = colors[slice]
     playChord(slice)
     updateProgression(slice)
-    if(index == 4){
-        progression = []
-        index=0
-    }
+
     index++
 
 }
@@ -76,4 +75,12 @@ function updateProgression(slice){
     html_chords[index].style.background = "rgb(" + LBColor[0]*255 + "," + LBColor[1]*255 + "," + LBColor[2]*255 + ")"
 }
 
+function clearProgression(){
+    html_chords.forEach(node =>{
+        node.children[0].innerText = ''
+        node.style.background = ''
+        step = 0 // clear audio progression
+        progression = []
+    })
+}
   
