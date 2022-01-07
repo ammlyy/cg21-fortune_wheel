@@ -19,19 +19,19 @@ var camera_up = [0.0, 1.0, 0.0];
 
 document.addEventListener('keydown', (e) => {
     switch(e.code) {
-        case "ArrowUp":
+        case "KeyW":
             camera_diff.y = -DELTA;
             break;
 
-        case "ArrowLeft":
+        case "KeyA":
             camera_diff.x = DELTA;
             break;
 
-        case "ArrowDown":
+        case "KeyS":
             camera_diff.y = DELTA;
             break;
 
-        case "ArrowRight":
+        case "KeyD":
             camera_diff.x = -DELTA;
             break;
 
