@@ -27,7 +27,11 @@ var gl;
 var program;
 var meshes = [];
 var textures = [];
-var occlusions = []
+var occlusions = [];
+
+var worldMatrix;
+var viewMatrix;
+var projectionMatrix;
 
 const colors = [
   [1, 0.482, 0, 1.0], // 0 orange
