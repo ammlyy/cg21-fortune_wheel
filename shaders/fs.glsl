@@ -11,17 +11,15 @@ uniform sampler2D AO_texture;
 uniform float isStand;
 
 // Primary light
-uniform vec3 LAType;        // indexes: 0-direct, 1-point, 2-spot
+uniform vec2 LAType;        // indexes: 0-direct, 1-point
 uniform vec3 LAPos;
 uniform vec3 LADir;
 uniform vec4 LACol;
 uniform float LATarget;
 uniform float LADecay;
-uniform float LAConeIn;
-uniform float LAConeOut;
 
 // Secondary light (fixed point light)
-uniform vec3 LBType;
+uniform vec2 LBType;
 uniform vec3 LBPos;
 uniform vec4 LBCol;
 uniform float LBTarget;
@@ -38,31 +36,25 @@ uniform vec4 ambientMatColor;
 
 out vec4 outColor;
 
-vec3 computeDirection(vec3 lightType, vec3 lightPos){
+vec3 computeDirection(vec2 lightType, vec3 lightPos){
     // direct
     vec3 directLightDir = LADir;
     // Point
     vec3 pointLightDir = normalize(lightPos - fs_pos);
-    // Spot
-    vec3 spotLightDir = pointLightDir;
 
-    return directLightDir * lightType.x + pointLightDir * lightType.y + spotLightDir * lightType.z;
+    return directLightDir * lightType.x + pointLightDir * lightType.y;
 }
 
 
-vec4 computeColor(vec3 lightType, vec3 lightDir, vec3 lightPos, vec4 lightCol, float lightTarget, float lightDecay){
-    float LCosOut = cos(radians(LAConeOut / 2.0));
-	float LCosIn = cos(radians(LAConeOut * LAConeIn / 2.0));
+vec4 computeColor(vec2 lightType, vec3 lightDir, vec3 lightPos, vec4 lightCol, float lightTarget, float lightDecay){
 
     // Direct
     vec4 directLightCol = lightCol;
     // Point
     vec4 pointLightCol = lightCol * pow(lightTarget / length(lightPos - fs_pos), lightDecay);
     // Spot
-    vec4 spotLightCol = lightCol * pow(lightTarget / length(lightPos - fs_pos), lightDecay) *
-                        clamp((dot(normalize(lightPos - fs_pos), lightDir) - LCosOut) / (LCosIn - LCosOut), 0.0, 1.0);
 
-    return directLightCol * lightType.x + pointLightCol * lightType.y + spotLightCol * lightType.z;
+    return directLightCol * lightType.x + pointLightCol * lightType.y;
 }
 
 

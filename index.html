@@ -20,6 +20,35 @@
 <body>
 
   <div class='container-fluid'> 
+    <div id='z-menu'> 
+    <div class ='progression'> 
+      <div id ='chord1' class="card chord">
+        <div class="card-body">
+        </div>
+      </div>
+      <div id='chord2' class="card chord ">
+        <div class="card-body">
+        </div>
+      </div>
+      <div id='chord3' class="card chord  ">
+        <div class="card-body">
+        </div>
+      </div>
+      <div id='chord4' class="card chord">
+        <div class="card-body">
+        </div>
+      </div>
+      <div class='play-menu'>
+        <button type="button" class="btn btn-warning btn-sm " onclick='playProgression()'> Play </button>
+        <button type="button" class="btn btn-danger btn-sm" onclick='clearProgression()'> Clear </button>
+
+      </div>
+
+
+
+    </div>
+    </div>
+
     <div class='row position-relative'>
       <div class="col-3 position-absolute d-flex justify-content-center" id="gui-container">
         <div id='GUI' class='row my-auto'>
@@ -38,20 +67,17 @@
           <label class="form-label">Pos Z</label>
           <input type="range" class="form-range" id="lposz" max='50' min='-50' value='20'>
 
-          <label class="form-label">Cone in</label>
-          <input type="range" class="form-range" id="conein" max='100' min='0' value='30'>
-
-          <label class="form-label">Cone out</label>
-          <input type="range" class="form-range" id="coneout" max='150' min='0' value='80'>
-
           <label class="form-label">Target distance</label>
           <input type="range" class="form-range" id="target_distance" max='100' min='0' value='50'>
+
+          <label class="form-label">Decay</label>
+          <input type="range" class="form-range" id="ldecay" max='2' min='0' step='1' value='0'>
+
           
           <div class="dropdown">
-            <select class="btn btn-outline-secondary btn-sm dropdown-toggle" id='lightA''>
+            <select class="btn btn-secondary btn-sm dropdown-toggle" id='lightA''>
               <option class="dropdown-item" value='direct'>Direct</option>
               <option class="dropdown-item" value='point'>Point</option>
-              <option class="dropdown-item" value='spot'>Spot</option>
             </select>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             </div>
@@ -59,29 +85,8 @@
           <button type="button" class="btn btn-primary btn-lg btn-block" onclick='spin()'>Spin the wheel!</button>
         </div>
 
-        <div class='progression my-auto'> 
-
-          <div id ='chord1' class="card chord">
-            <div class="card-body">
-            </div>
-          </div>
-          <div id='chord2' class="card chord">
-            <div class="card-body">
-            </div>
-          </div>
-          <div id='chord3' class="card chord">
-            <div class="card-body">
-            </div>
-          </div>
-          <div id='chord4' class="card chord">
-            <div class="card-body">
-            </div>
-          </div>
-            <button type="button" class="btn btn-warning btn-sm" onclick='playProgression()'> Play </button>
-            <button type="button" class="btn btn-danger btn-sm" onclick='clearProgression()'> Clear </button>
-
-        </div>
       </div>
+
       <div class='col-9' id='canva-container'>
               <canvas id='canva' ></canvas>
       </div>
