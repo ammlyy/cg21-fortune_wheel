@@ -30,11 +30,11 @@ function playProgression(){
         alert('Create a valid progression')
     }
     else{
-        var chordPart = new Tone.Part(function(time, chord){
+        const chordPart = new Tone.Part(function(time, chord){
 		piano.triggerAttackRelease(chord, "1m", time);
-	}, progression ).start(0.2);
+	}, progression).start(0.1);;
     console.log(progression)
-    Tone.Transport.start("+0.1");
+    Tone.Transport.start();
 
     }
 }
