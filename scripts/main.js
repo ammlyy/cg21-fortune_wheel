@@ -13,15 +13,32 @@ async function init() {
 
   await loadMeshFromFile(baseDir + '/assets/frame/frame.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj) => meshes.push(obj))
-  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => 
-  {
-     meshes.push(obj)
-     wheelCenterY = findCenter(obj.vertices)
+  await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => {
+    meshes.push(obj)
+    wheelCenterY = findCenter(obj.vertices).y
   })
-  await loadMeshFromFile(baseDir + 'assets/table/table.obj').then((obj)=>meshes.push(obj))
+  await loadMeshFromFile(baseDir + 'assets/table/table.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/room/room.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/button/button.obj').then((obj) => {
+    meshes.push(obj)
+    let [minV, maxV] = findExtremeVertices(obj.vertices);
+    console.log("Minimum: " + minV)
+    console.log("Maximum: " + maxV);
+    buttonRaycastPlane = {
+      p0: [minV[0], maxV[1], minV[2]],
+      p1: [minV[0], maxV[1], maxV[2]],
+      p2: [maxV[0], maxV[1], maxV[2]]
+    }
+    raycastCoord = {
+      xMin: minV[0],
+      xMax: maxV[0],
+      zMin: minV[2],
+      zMax: maxV[2]
+    }
+  })
 
-  
+
+
   vaos = new Array(3)
 
   await loadShaders(shaderDir)
@@ -57,13 +74,13 @@ function main() {
 
   function animate() {
     var currentTime = (new Date).getTime();
-    
+
     if (lastUpdateTime && startSpinning) {
-      var t =  ( (currentTime - lastUpdateTime) / 1000.0 )
-      g_time += (utils.ExponentialImpulse(g_time+t, 1.0) / 100.0 )
+      var t = ((currentTime - lastUpdateTime) / 1000.0)
+      g_time += (utils.ExponentialImpulse(g_time + t, 1.0) / 100.0)
       last_rotation = g_time % 1.00
     }
-    else{
+    else {
       g_time = last_rotation
     }
     lastUpdateTime = currentTime;
@@ -83,7 +100,7 @@ function main() {
     let cameraMatrix = utils.LookAt(camera_pos, camera_target, camera_up)
     viewMatrix = utils.invertMatrix(cameraMatrix);
     let eyePosition = [camera_pos.x, camera_pos.y, camera_pos.z];
-    
+
     // LIGHT PARAMS
     let LAPosition = [
       document.getElementById('lposx').value / 10.0,
@@ -130,35 +147,40 @@ function main() {
 
       if (i == 0) // frame
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, frame_tex);
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, frame_AO);
-    if (i == 1 || i == 4){ // stand and room
+      gl.bindTexture(gl.TEXTURE_2D, frame_tex);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, frame_AO);
+      if (i == 1 || i == 4) { // stand and room
         gl.uniform1f(isStandLocation, 1)
       } // WHEEEEEEL
-      if (i == 2  ) {
+      if (i == 2) {
         worldMatrix = utils.multiplyMatrices(worldMatrix, createRotMatrix(g_time))
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
       }
-      if (i == 3){
+      if (i == 3) {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, table_tex);
       }
+      if (i == 5) {
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, button_tex);
+
+      }
       gl.uniform1i(textLocation, 0);
-  
+
       let viewWorldMatrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
       projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
      
       gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
-      gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(worldMatrix))); 
+      gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(worldMatrix)));
 
 
       gl.bindVertexArray(vaos[i]);
-      gl.drawElements(gl.TRIANGLES, meshes[i].indices.length, gl.UNSIGNED_SHORT, 0 );
-  
+      gl.drawElements(gl.TRIANGLES, meshes[i].indices.length, gl.UNSIGNED_SHORT, 0);
+
     }
 
     window.requestAnimationFrame(drawScene)
@@ -187,7 +209,8 @@ function loadTextures() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  };
 
   frame_tex = gl.createTexture();
   gl.activeTexture(gl.TEXTURE0);
@@ -203,25 +226,45 @@ function loadTextures() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  };
 
 
-    table_tex = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
+  table_tex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, table_tex);
+
+  var image3 = new Image();
+  image3.src = baseDir + TEXTURE_URLS[2];
+  image3.onload = function () {
     gl.bindTexture(gl.TEXTURE_2D, table_tex);
-  
-    var image3 = new Image();
-    image3.src = baseDir + TEXTURE_URLS[2];
-    image3.onload = function () {
-      gl.bindTexture(gl.TEXTURE_2D, table_tex);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image3);
-  
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
-  
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image3);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  };
+
+
+  button_tex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, button_tex);
+
+  var image4 = new Image();
+  image4.src = baseDir + TEXTURE_URLS[3];
+  image4.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, button_tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image4);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  };
+
 
 }
 
@@ -240,7 +283,8 @@ function loadOcclusions() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  };
 
   frame_AO = gl.createTexture();
   gl.activeTexture(gl.TEXTURE1);
@@ -256,7 +300,8 @@ function loadOcclusions() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);  };
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  };
 
 }
 
@@ -343,17 +388,17 @@ function fillBuffers(i) {
 
 }
 
-function createRotMatrix(t){
+function createRotMatrix(t) {
 
-	var translate_center = utils.MakeTranslateMatrix(0,wheelCenterY,0);	
-	var rotation = utils.MakeRotateZMatrix(t*360);	
+  var translate_center = utils.MakeTranslateMatrix(0, wheelCenterY, 0);
+  var rotation = utils.MakeRotateZMatrix(t * 360);
 
-	
-	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
-	return out;
+
+  var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
+  return out;
 }
 
-function findCenter(vertices){
+function findCenter(vertices) {
   const min = vertices.slice(0, 3);
   const max = vertices.slice(0, 3);
   for (let i = 3; i < vertices.length; i += 3) {
@@ -361,20 +406,38 @@ function findCenter(vertices){
       const v = vertices[i + j];
       min[j] = Math.min(v, min[j]);
       max[j] = Math.max(v, max[j]);
-    }
+    }     
+
   }
-  var cy = (max[1] - min[1]) / 2 + min[1]
-  return cy;
+  return {
+    x: (max[0] - min[0]) / 2 + min[0],
+    y: (max[1] - min[1]) / 2 + min[1],
+    z: (max[2] - min[2]) / 2 + min[2]
+  };
 
 }
 
-function decodeLight(type){
-  switch(type){
-    case("direct"): return [1, 0, 0]
-    
-    case("point"): return[0, 1, 0]
+function findExtremeVertices(vertices) {
+  const min = vertices.slice(0, 3);
+  const max = vertices.slice(0, 3);
+  for (let i = 3; i < vertices.length; i += 3) {
+    for (let j = 0; j < 3; ++j) {
+      const v = vertices[i + j];
+      min[j] = Math.min(v, min[j]);
+      max[j] = Math.max(v, max[j]);
+    }     
 
-    case("spot"): return [0, 0, 1]
+  }
+  return [min, max];
+}
+
+function decodeLight(type) {
+  switch (type) {
+    case ("direct"): return [1, 0, 0]
+
+    case ("point"): return [0, 1, 0]
+
+    case ("spot"): return [0, 0, 1]
   }
 }
 
@@ -382,7 +445,7 @@ function getLightDirection() {
   let theta = utils.degToRad(document.getElementById('dirTheta').value);
   let phi = utils.degToRad(document.getElementById('dirPhi').value);
 
-  return [Math.sin(theta)*Math.sin(phi), Math.cos(theta), Math.sin(theta)*Math.cos(phi)]
+  return [Math.sin(theta) * Math.sin(phi), Math.cos(theta), Math.sin(theta) * Math.cos(phi)]
 }
 
 // Returns the direction of the ray from camera to clicked point in World Coordinates. 
@@ -393,7 +456,7 @@ function getWorldRay(x, y) {
   let normY = 1.0 - 2.0*y / gl.canvas.height;
 
   // Passing to homogeneous clip coordinates (z is -1 because it's in the forward direction)
-  let rayClip = [normX, normY, -1.0, 1.0];
+  let rayClip = [normX, normY, 1.0, 1.0];
 
   // Passing to Camera Coordinates
   let rayEye = utils.multiplyMatrixVector(utils.invertMatrix(projectionMatrix), rayClip);
@@ -406,6 +469,8 @@ function getWorldRay(x, y) {
 }
 
 document.addEventListener("click", (e) => {
-  let worldRay = getWorldRay(e.clientX, e.clientY)
+  let worldRay = getWorldRay(e.clientX, e.clientY);
+  let intersection = raycast.linePlaneIntersection(buttonRaycastPlane, camera_pos, worldRay)
+  console.log("Intersection: " + intersection)
 });
 window.onload = init;  
