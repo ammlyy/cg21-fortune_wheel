@@ -30,6 +30,7 @@ var occlusions = [];
 
 var worldMatrix;
 var viewMatrix;
+var perspectiveMatrix;
 var projectionMatrix;
 var buttonRaycastPlane;
 var raycastCoordinates;
@@ -83,9 +84,7 @@ var raycast = {
   // fast and easy algorithm for calculating the intersection between a plane and a line.
   // Note: the line cannot be coplanar with the plane
   linePlaneIntersection: function (planePoints, rayPoint1, rayDirection) {
-      // l_a = rayPoint1
-      // l_b = rayPoint2
-      // l_ab = rayDir
+
       let rayPoint2 = this.addVector(rayDirection, rayPoint1);
       let rayDir = utils.subtractVectors(rayPoint2, rayPoint1);
       let planeDir01 = utils.subtractVectors(planePoints.p1, planePoints.p0);

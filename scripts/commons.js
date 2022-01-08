@@ -220,11 +220,4 @@ var commons = {
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.indices), gl.STATIC_DRAW);
     }
 
-      
-      
-
-
-      
-
-
 }

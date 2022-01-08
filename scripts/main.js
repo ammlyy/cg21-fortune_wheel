@@ -42,7 +42,7 @@ function main() {
 
 	var lastUpdateTime = (new Date).getTime();
 
-	var perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
+	perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
 
 	drawScene();
 
@@ -234,10 +234,10 @@ function getWorldRay(x, y) {
 	let normY = 1.0 - 2.0 * y / gl.canvas.height;
 
 	// Passing to homogeneous clip coordinates (z is -1 because it's in the forward direction)
-	let rayClip = [normX, normY, 1.0, 1.0];
+	let rayClip = [normX, normY, -1.0, 1.0];
 
 	// Passing to Camera Coordinates
-	let rayEye = utils.multiplyMatrixVector(utils.invertMatrix(projectionMatrix), rayClip);
+	let rayEye = utils.multiplyMatrixVector(utils.invertMatrix(perspectiveMatrix), rayClip);
 	rayEye = [rayEye[0], rayEye[1], -1.0, 0.0];
 
 	// Passing to World Coordinates
