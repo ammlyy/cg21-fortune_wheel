@@ -15,12 +15,14 @@ async function init() {
   await loadMeshFromFile(baseDir + '/assets/stand/stand.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/wheel/wheel.obj').then((obj) => {
     meshes.push(obj)
-    wheelCenterY = findCenter(obj.vertices).y
+    wheelCenter = findCenter(obj.vertices)
   })
   await loadMeshFromFile(baseDir + 'assets/table/table.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/room/room.obj').then((obj) => meshes.push(obj))
+  await loadMeshFromFile(baseDir + '/assets/button/base.obj').then((obj) => meshes.push(obj))
   await loadMeshFromFile(baseDir + '/assets/button/button.obj').then((obj) => {
     meshes.push(obj)
+    buttonCenter = findCenter(obj.vertices)
     let [minV, maxV] = findExtremeVertices(obj.vertices);
     console.log("Minimum: " + minV)
     console.log("Maximum: " + maxV);
@@ -108,24 +110,21 @@ function main() {
       document.getElementById('lposz').value / 10.0,
     ]
     let LADirection = getLightDirection()
-    let LAConeIn = document.getElementById('conein').value / 100.0
-    let LAConeOut = document.getElementById('coneout').value / 100.0
     let LATarget = document.getElementById('target_distance').value / 10.0
     let LAType = decodeLight(document.getElementById('lightA').value)
+    let LADecay = document.getElementById('ldecay').value
 
 
     // Passing primary light uniforms
-    gl.uniform3fv(LATypeLocation, LAType);
+    gl.uniform2fv(LATypeLocation, LAType);
     gl.uniform3fv(LAPositionLocation, LAPosition);
     gl.uniform3fv(LADirectionLocation, LADirection);
     gl.uniform1f(LATargetLocation, LATarget);
-    gl.uniform1f(LAConeInLocation, LAConeIn);
-    gl.uniform1f(LAConeOutLocation, LAConeOut);
-    gl.uniform1f(LADecayLocation, LA_DECAY);
+    gl.uniform1f(LADecayLocation, LADecay);
     gl.uniform4fv(LAColorLocation, LA_COLOR);
 
     // Passing secondary light uniforms
-    gl.uniform3fv(LBTypeLocation, LB_TYPE);
+    gl.uniform2fv(LBTypeLocation, LB_TYPE);
     gl.uniform3fv(LBPositionLocation, LB_POSITION);
     gl.uniform1f(LBTargetLocation, LB_TARGET);
     gl.uniform1f(LBDecayLocation, LB_DECAY);
@@ -150,24 +149,34 @@ function main() {
       gl.bindTexture(gl.TEXTURE_2D, frame_tex);
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, frame_AO);
+
       if (i == 1 || i == 4) { // stand and room
         gl.uniform1f(isStandLocation, 1)
-      } // WHEEEEEEL
-      if (i == 2) {
+      } 
+      if (i == 2) { // wheel
         worldMatrix = utils.multiplyMatrices(worldMatrix, createRotMatrix(g_time))
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, wheel_tex);
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, wheel_AO);
       }
-      if (i == 3) {
+
+      if (i == 3) { // table
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, table_tex);
       }
-      if (i == 5) {
+
+      if (i == 5) { // button  base
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, button_tex);
 
+      }
+
+      if (i == 6){ // button
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, button_tex);
+        worldMatrix = utils.multiplyMatrices(worldMatrix, 
+         createScaleButton(sz) )
       }
       gl.uniform1i(textLocation, 0);
 
@@ -336,8 +345,6 @@ function setupUniforms() {
   LAColorLocation = gl.getUniformLocation(program, "LACol");
   LATargetLocation = gl.getUniformLocation(program, "LATarget");
   LADecayLocation = gl.getUniformLocation(program, "LADecay");
-  LAConeInLocation = gl.getUniformLocation(program, "LAConeIn");
-  LAConeOutLocation = gl.getUniformLocation(program, "LAConeOut");
 
   // Secondary light
   LBTypeLocation = gl.getUniformLocation(program, "LBType");
@@ -390,7 +397,7 @@ function fillBuffers(i) {
 
 function createRotMatrix(t) {
 
-  var translate_center = utils.MakeTranslateMatrix(0, wheelCenterY, 0);
+  var translate_center = utils.MakeTranslateMatrix(0, wheelCenter.y, 0);
   var rotation = utils.MakeRotateZMatrix(t * 360);
 
 
@@ -398,17 +405,17 @@ function createRotMatrix(t) {
   return out;
 }
 
-function findCenter(vertices) {
-  const min = vertices.slice(0, 3);
-  const max = vertices.slice(0, 3);
-  for (let i = 3; i < vertices.length; i += 3) {
-    for (let j = 0; j < 3; ++j) {
-      const v = vertices[i + j];
-      min[j] = Math.min(v, min[j]);
-      max[j] = Math.max(v, max[j]);
-    }     
+function createScaleButton(f){
+  var translate_center = utils.MakeTranslateMatrix(buttonCenter.x, buttonCenter.y, 0);
+  var rotation = utils.MakeScaleNonUniform(1.0, f, 1.0);
 
-  }
+  var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
+  return out;
+
+}
+
+function findCenter(vertices) {
+  const [min, max] = findExtremeVertices(vertices)
   return {
     x: (max[0] - min[0]) / 2 + min[0],
     y: (max[1] - min[1]) / 2 + min[1],
@@ -433,11 +440,9 @@ function findExtremeVertices(vertices) {
 
 function decodeLight(type) {
   switch (type) {
-    case ("direct"): return [1, 0, 0]
+    case ("direct"): return [1.0, 0.0]
 
-    case ("point"): return [0, 1, 0]
-
-    case ("spot"): return [0, 0, 1]
+    case ("point"): return [0.0, 1.0]
   }
 }
 

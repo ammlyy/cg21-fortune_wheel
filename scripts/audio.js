@@ -27,13 +27,15 @@ function playChord(index){
 }
 
 function playProgression(){
+    Tone.Transport.stop(0)
     if(progression.length == 0){
         alert('Create a valid progression')
     }
     else{
         var chordPart = new Tone.Part(function(time, chord){
 		piano.triggerAttackRelease(chord, "1m", time);
-	}, progression ).start(0);
+	}, progression ).start(0.2);
+    console.log(progression)
     Tone.Transport.start("+0.1");
 
     }

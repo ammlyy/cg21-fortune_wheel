@@ -3,7 +3,7 @@ const LA_DECAY = 1.0;
 const LA_COLOR = [1.0, 1.0, 1.0, 1.0];
 
 // Secondary light is fixed point light in the back with color changing according to the wheel result
-const LB_TYPE = [0.0, 1.0, 0.0];
+const LB_TYPE = [0.0, 1.0];
 const LB_POSITION = [0.0, 15.0, -15.0];
 const LB_TARGET = 30.0;
 const LB_DECAY = 1.0;
@@ -67,6 +67,8 @@ const CHORDS_text = [
 
 const degree = [0, 2, 4, 5, 7, 9, 11] // major
 const ROOTS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+var sz = 1.0 
 
 var raycast = {
   dot: function (a, b) {

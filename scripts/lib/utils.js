@@ -588,6 +588,17 @@ var utils={
 	
 			return out; 
 		},
+
+		MakeScaleNonUniform: function(x, y, z){
+				var m = this.identityMatrix()
+
+				m[0] = x
+				m[5] = y
+				m[10] = z
+			
+				return  m;
+			
+			},
 	
 	
 	//***Projection Matrix operations

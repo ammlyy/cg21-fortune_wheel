@@ -46,12 +46,37 @@ label{
     padding: 0px;
 }
 
+#z-menu{
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+}
+
 .progression{
-    margin-left: 5%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 50%;
+    height: 8em
+}
+
+.play-menu{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 3em;
+    margin: 1%;
 }
 
 .chord{
-    width: 5em;
-    height: 5em;
-    margin: 5%;
+    width:5em;
+    height:4em;
+    margin: 1%;
+}
+
+.btn-sm{
+    margin: 3%;
 }

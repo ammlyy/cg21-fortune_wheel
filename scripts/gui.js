@@ -12,6 +12,7 @@ function spin(){
     startAudioContext();        // Defined in audio.js
 
     startSpinning = true;
+    sz = 0.5
     spinTime = (Math.random() * 2.0 + 5.0)
     sampler.triggerAttackRelease('C3', spinTime)
     if(index == 4){
@@ -22,6 +23,7 @@ function spin(){
     setTimeout(()=>{
         startSpinning = false;
         pickSlice()
+        sz = 1.0
     }, spinTime * 1000)
 
     
