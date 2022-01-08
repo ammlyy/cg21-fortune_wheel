@@ -1,6 +1,6 @@
 const CAMERA_TOP_OMEGA = 105;
 const CAMERA_BOTTOM_OMEGA = 10;
-const CAMERA_SPHERE_RADIUS = 3.5;
+const CAMERA_SPHERE_RADIUS = 2.25;
 const MAX_DEPTH = 2.5;
 const MIN_DEPTH = 0.5;
 const Y_WHEEL = 5.0;
