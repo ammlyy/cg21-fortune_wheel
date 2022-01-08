@@ -83,8 +83,7 @@ function main() {
 			document.getElementById('lposz').value / 10.0,
 		]
 		let LADirection = getLightDirection()
-		let LATarget = document.getElementById('target_distance').value / 10.0
-		console.log(LATarget)
+		let LATarget = document.getElementById('target_distance').value 
 		let LAType = decodeLight(document.getElementById('lightA').value)
 		let LADecay = document.getElementById('ldecay').value
 		let LAConeIn = document.getElementById('conein').value
