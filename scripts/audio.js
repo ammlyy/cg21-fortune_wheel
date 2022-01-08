@@ -1,8 +1,8 @@
-progression = []
-step = 0
-var piano = SampleLibrary.load({
+var progression = []
+var step = 0
+const piano = SampleLibrary.load({
     instruments: "piano"
-});
+}).toDestination();
 
 const sampler = new Tone.Sampler({
 	urls: {
@@ -11,14 +11,12 @@ const sampler = new Tone.Sampler({
 }).toDestination();
 sampler.set({volume: -6})
 
-piano.toDestination();
-
 function startAudioContext(){
     Tone.start()
 }
 
 function playChord(index){
-    if (CHORDS[index]){
+    if (CHORDS[index]){ 
         var chord = CHORDS[index].map(note => note += degree[index])
         chord = createChord(chord, '1m')    
         progression.push(chord)
@@ -48,8 +46,6 @@ function createChord(notes, interval){
     tuple.push(Tone.Time(step) + Tone.Time(interval));
     tuple.push(chord);
     step += Tone.Time(interval)
-
-
     return tuple;
 }
 

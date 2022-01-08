@@ -32,7 +32,6 @@ async function init() {
 
 }
 
-
 function main() {
 	//setup global states
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -154,15 +153,14 @@ function main() {
 			projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewWorldMatrix);
 
 			gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(projectionMatrix));
-			gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(worldMatrix)));
+			gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(utils.invertMatrix(utils.transposeMatrix(worldMatrix))));
+			gl.uniformMatrix4fv(vertexMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(worldMatrix))
 
 			gl.bindVertexArray(vaos[i]);
 			gl.drawElements(gl.TRIANGLES, meshes[i].indices.length, gl.UNSIGNED_SHORT, 0);
 
 		}
-
 		window.requestAnimationFrame(drawScene)
-
 	}
 }
 
@@ -173,10 +171,8 @@ async function loadMeshFromFile(path) {
 }
 
 function createRotMatrix(t) {
-
 	var translate_center = utils.MakeTranslateMatrix(0, wheelCenter.y, 0);
 	var rotation = utils.MakeRotateZMatrix(t * 360);
-
 
 	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
 	return out;
@@ -188,7 +184,6 @@ function createScaleButton(f) {
 
 	var out = utils.multiplyMatrices(translate_center, utils.multiplyMatrices(rotation, utils.invertMatrix(translate_center)));
 	return out;
-
 }
 
 function findCenter(vertices) {
@@ -210,7 +205,6 @@ function findExtremeVertices(vertices) {
 			min[j] = Math.min(v, min[j]);
 			max[j] = Math.max(v, max[j]);
 		}
-
 	}
 	return [min, max];
 }
