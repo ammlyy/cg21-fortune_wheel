@@ -163,15 +163,14 @@ var commons = {
         LAColorLocation = gl.getUniformLocation(program, "LACol");
         LATargetLocation = gl.getUniformLocation(program, "LATarget");
         LADecayLocation = gl.getUniformLocation(program, "LADecay");
+        LAConeInLocation = gl.getUniformLocation(program, "LAConeIn");
+        LAConeOutLocation = gl.getUniformLocation(program, "LAConeOut");
       
         // Secondary light
         LBTypeLocation = gl.getUniformLocation(program, "LBType");
-        LBPositionLocation = gl.getUniformLocation(program, "LBPos");
         LBDirectionLocation = gl.getUniformLocation(program, "LBDir");
         LBColorLocation = gl.getUniformLocation(program, "LBCol");
-        LBTargetLocation = gl.getUniformLocation(program, "LBTarget");
-        LBDecayLocation = gl.getUniformLocation(program, "LBDecay");
-      
+
         // Shared parameters
         diffuseColorLocation = gl.getUniformLocation(program, "diffuseColor");
         specularColorLocation = gl.getUniformLocation(program, "specularColor");

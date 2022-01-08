@@ -84,23 +84,26 @@ function main() {
 		]
 		let LADirection = getLightDirection()
 		let LATarget = document.getElementById('target_distance').value / 10.0
+		console.log(LATarget)
 		let LAType = decodeLight(document.getElementById('lightA').value)
 		let LADecay = document.getElementById('ldecay').value
+		let LAConeIn = document.getElementById('conein').value
+    	let LAConeOut = document.getElementById('coneout').value
 
 
 		// Passing primary light uniforms
-		gl.uniform2fv(LATypeLocation, LAType);
+		gl.uniform3fv(LATypeLocation, LAType);
 		gl.uniform3fv(LAPositionLocation, LAPosition);
+		gl.uniform4fv(LAColorLocation, LA_COLOR);
 		gl.uniform3fv(LADirectionLocation, LADirection);
 		gl.uniform1f(LATargetLocation, LATarget);
 		gl.uniform1f(LADecayLocation, LADecay);
-		gl.uniform4fv(LAColorLocation, LA_COLOR);
+		gl.uniform1f(LAConeInLocation, LAConeIn);
+    	gl.uniform1f(LAConeOutLocation, LAConeOut);
 
 		// Passing secondary light uniforms
-		gl.uniform2fv(LBTypeLocation, LB_TYPE);
-		gl.uniform3fv(LBPositionLocation, LB_POSITION);
-		gl.uniform1f(LBTargetLocation, LB_TARGET);
-		gl.uniform1f(LBDecayLocation, LB_DECAY);
+		gl.uniform3fv(LBTypeLocation, LB_TYPE);
+		gl.uniform3fv(LBDirectionLocation, LB_DIRECTION);
 		gl.uniform4fv(LBColorLocation, LBColor);
 
 		// Passing light constant uniforms
@@ -211,9 +214,9 @@ function findExtremeVertices(vertices) {
 
 function decodeLight(type) {
 	switch (type) {
-		case ("direct"): return [1.0, 0.0]
-
-		case ("point"): return [0.0, 1.0]
+		case ("direct"): return [1.0, 0.0, 0.0]
+		case ("point"): return [0.0, 1.0, 0.0]
+		case ("spot"): return [0.0, 0.0, 1.0]
 	}
 }
 
