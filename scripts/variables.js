@@ -85,15 +85,15 @@ var raycast = {
   // Note: the line cannot be coplanar with the plane
   linePlaneIntersection: function (planePoints, rayPoint1, rayDirection) {
 
-      let rayPoint2 = this.addVector(rayDirection, rayPoint1);
-      let rayDir = utils.subtractVectors(rayPoint2, rayPoint1);
-      let planeDir01 = utils.subtractVectors(planePoints.p1, planePoints.p0);
-      let planeDir02 = utils.subtractVectors(planePoints.p2, planePoints.p0);
+    let rayPoint2 = this.addVector(rayDirection, rayPoint1);
+    let rayDir = utils.subtractVectors(rayPoint2, rayPoint1);
+    let planeDir01 = utils.subtractVectors(planePoints.p1, planePoints.p0);
+    let planeDir02 = utils.subtractVectors(planePoints.p2, planePoints.p0);
 
-      let planeCross = utils.cross(planeDir01, planeDir02);
-      let numerator = this.dot(planeCross, utils.subtractVectors(rayPoint1, planePoints.p0));
-      let denominator = this.dot(utils.subtractVectors([0, 0, 0], rayDir), planeCross);
-      let t = numerator / denominator;
-      return this.addVector(rayPoint1, this.scaleVector(rayDir, t));
-  }
+    let planeCross = utils.cross(planeDir01, planeDir02);
+    let numerator = this.dot(planeCross, utils.subtractVectors(rayPoint1, planePoints.p0));
+    let denominator = this.dot(utils.subtractVectors([0, 0, 0], rayDir), planeCross);
+    let t = numerator / denominator;
+    return this.addVector(rayPoint1, this.scaleVector(rayDir, t));
+}
 }

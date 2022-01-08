@@ -14,8 +14,6 @@ var commons = {
             meshes.push(obj)
             buttonCenter = findCenter(obj.vertices)
             let [minV, maxV] = findExtremeVertices(obj.vertices);
-            console.log("Minimum: " + minV)
-            console.log("Maximum: " + maxV);
             buttonRaycastPlane = {
                 p0: [minV[0], maxV[1], minV[2]],
                 p1: [minV[0], maxV[1], maxV[2]],

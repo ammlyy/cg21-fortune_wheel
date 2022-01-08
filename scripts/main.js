@@ -249,6 +249,10 @@ function getWorldRay(x, y) {
 document.addEventListener("click", (e) => {
 	let worldRay = getWorldRay(e.clientX, e.clientY);
 	let intersection = raycast.linePlaneIntersection(buttonRaycastPlane, camera_pos, worldRay)
+	if(intersection[0] >= raycastCoord.xMin && intersection[0] <= raycastCoord.xMax && // check if the clicked point obtained from raycasting 
+		intersection[2] >= raycastCoord.zMin && intersection[2] <= raycastCoord.zMax  ){ // falls between the button plane
+		spin()
+	}
 	console.log("Intersection: " + intersection)
 });
 
