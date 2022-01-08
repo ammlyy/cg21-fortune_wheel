@@ -8,7 +8,7 @@ in vec3 fs_pos;
 uniform sampler2D in_texture;
 uniform sampler2D AO_texture;
 
-uniform float isStand;
+uniform float hasTexture;
 
 // Primary light
 uniform vec2 LAType;        // indexes: 0-direct, 1-point
@@ -86,7 +86,7 @@ vec4 computeAmbient(vec4 ambColor) {
 }
 
 void main(){   
-    vec4 texcol = (1.0 - isStand)*(texture(in_texture, fsUV) * texture(AO_texture, fsUV)) + isStand * vec4(0.5, 0.5, 0.5, 1.0);
+    vec4 texcol = (1.0 - hasTexture)*(texture(in_texture, fsUV) * texture(AO_texture, fsUV)) + hasTexture * vec4(0.5, 0.5, 0.5, 1.0);
     vec4 diffColor = diffuseColor*0.1 + texcol*0.9;
     vec4 ambColor = ambientMatColor*0.1 + texcol*0.9;
     vec3 eyedirVec = normalize(eyePos - fs_pos);

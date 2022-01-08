@@ -13,9 +13,10 @@ out vec2 fsUV;
 out vec3 fs_pos; 
 
 void main() {
+  fsNormal = mat3(normMatrix)*inNormal;
+  fs_pos = (posMatrix * vec4(inPosition, 1.0)).xyz;
   fsUV = in_uv;
-  fs_pos = mat3(posMatrix) * inPosition;
-  fsNormal = mat3(normMatrix) * inNormal;
-
+  
   gl_Position = matrix * vec4(inPosition, 1.0);
+  
 }

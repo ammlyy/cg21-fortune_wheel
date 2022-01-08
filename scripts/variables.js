@@ -25,6 +25,7 @@ var last_rotation = 0;
 
 var gl;
 var program;
+var vaos = []
 var meshes = [];
 var textures = [];
 var occlusions = [];
