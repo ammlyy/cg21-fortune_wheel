@@ -19,6 +19,7 @@ body, html{
 #gui-container{
     height: 100%;
     padding: 0px;
+    z-index: 2;
 }
 
 #GUI{

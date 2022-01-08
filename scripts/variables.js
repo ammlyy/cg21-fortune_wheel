@@ -13,8 +13,8 @@ const AMBIENT_LIGHT_COLOR = [0.2, 0.2, 0.2, 1.0];
 const AMBIENT_MATERIAL_COLOR = [1.0, 1.0, 1.0, 1.0];
 
 // Textures
-const TEXTURE_URLS = ['/assets/wheel/wheelSurface_Color.png', '/assets/frame/frameSurface_color.png', '/assets/table/tableSurface_color.png', '/assets/button/buttonSurface_Color.png']
-const OCCLUSION_URLS = ['/assets/wheel/wheelAmbient_Occlusion.png', '/assets/frame/frameAmbient_Occlusion.png']
+const TEXTURE_URLS = ['assets/wheel/wheelSurface_Color.png', 'assets/frame/frameSurface_color.png', 'assets/table/tableSurface_color.png', 'assets/button/buttonSurface_Color.png']
+const OCCLUSION_URLS = ['assets/wheel/wheelAmbient_Occlusion.png', 'assets/frame/frameAmbient_Occlusion.png']
 
 var LBColor = [1.0, 1.0, 1.0, 1.0];   
 var g_time = 0;
