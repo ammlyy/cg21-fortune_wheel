@@ -1,7 +1,8 @@
 var progression = []
 var step = 0
 const piano = SampleLibrary.load({
-    instruments: "piano"
+    instruments: "piano",
+    baseUrl: 'samples/'
 }).toDestination();
 
 const sampler = new Tone.Sampler({
