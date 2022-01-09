@@ -253,7 +253,6 @@ document.addEventListener("click", (e) => {
 		intersection[2] >= raycastCoord.zMin && intersection[2] <= raycastCoord.zMax  ){ // falls between the button plane
 		spin()
 	}
-	console.log("Intersection: " + intersection)
 });
 
 
