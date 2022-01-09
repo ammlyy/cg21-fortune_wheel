@@ -32,14 +32,16 @@ body, html{
 
 label{
     color: gainsboro;
+    font-size: medium;
 }
 
 .form-range{
-    margin-bottom: 5%;
+    margin-bottom: 9%;
+    height: 2px !important;
 }
 
 .dropdown{
-    padding-top: 5%;
+    padding-top: 1%;
     padding-bottom: 10%;
 }
 
