@@ -246,6 +246,18 @@ function getWorldRay(x, y) {
 	return utils.normalize(rayWorld);
 }
 
+function setPropertiesVisibility(theta, phi, xPos, yPos, zPos, target, decay, cIn, cOut) {
+	document.getElementById('theta-cont').style.display = theta;
+	document.getElementById('phi-cont').style.display = phi;
+	document.getElementById('x-cont').style.display = xPos;
+	document.getElementById('y-cont').style.display = yPos;
+	document.getElementById('z-cont').style.display = zPos;
+	document.getElementById('target-cont').style.display = target;
+	document.getElementById('decay-cont').style.display = decay;
+	document.getElementById('coneIn-cont').style.display = cIn;
+	document.getElementById('coneOut-cont').style.display = cOut;
+}
+
 document.addEventListener("click", (e) => {
 	let worldRay = getWorldRay(e.clientX, e.clientY);
 	let intersection = raycast.linePlaneIntersection(buttonRaycastPlane, camera_pos, worldRay)
@@ -255,5 +267,18 @@ document.addEventListener("click", (e) => {
 	}
 });
 
+document.getElementById('lightA').addEventListener('change', () => {	
+	switch(document.getElementById('lightA').value) {
+		case 'direct':
+			setPropertiesVisibility('block', 'block', 'none', 'none', 'none', 'none', 'none', 'none', 'none')
+			return;
+		case 'point':
+			setPropertiesVisibility('none', 'none', 'block', 'block', 'block', 'block', 'block', 'none', 'none')
+			return;
+		case 'spot':
+			setPropertiesVisibility('block', 'block', 'block', 'block', 'block', 'block', 'block', 'block', 'block')
+			return;
+	}
+});
 
 window.onload = init;  
