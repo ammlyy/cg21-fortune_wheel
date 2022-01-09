@@ -2,7 +2,7 @@ var progression = []
 var step = 0
 const piano = SampleLibrary.load({
     instruments: "piano",
-    baseUrl: '../samples/'
+    baseUrl: 'cg21-fortune_wheel/samples/'
 }).toDestination();
 
 const sampler = new Tone.Sampler({
