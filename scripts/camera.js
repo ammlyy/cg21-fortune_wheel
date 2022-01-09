@@ -1,8 +1,10 @@
 const CAMERA_TOP_OMEGA = 105;
-const CAMERA_BOTTOM_OMEGA = 10;
+const CAMERA_BOTTOM_OMEGA = 40;
+const CAMERA_RIGHT_PHI = 50;
+const CAMERA_LEFT_PHI = 130;
 const CAMERA_SPHERE_RADIUS = 2.25;
 const MAX_DEPTH = 2.5;
-const MIN_DEPTH = 0.5;
+const MIN_DEPTH = 0.8;
 const Y_WHEEL = 5.0;
 const Z_WHEEL = 1.0;
 const DELTA = 2
@@ -48,7 +50,9 @@ document.addEventListener('keydown', (e) => {
     camera_angles.omega += camera_diff.y;
 
     if(camera_angles.omega < CAMERA_BOTTOM_OMEGA) camera_angles.omega = CAMERA_BOTTOM_OMEGA;
-    if(camera_angles.omega > CAMERA_TOP_OMEGA) camera_angles.omega = CAMERA_TOP_OMEGA;
+    else if(camera_angles.omega > CAMERA_TOP_OMEGA) camera_angles.omega = CAMERA_TOP_OMEGA;
+    if(camera_angles.phi < CAMERA_RIGHT_PHI) camera_angles.phi = CAMERA_RIGHT_PHI;
+    else if(camera_angles.phi > CAMERA_LEFT_PHI) camera_angles.phi = CAMERA_LEFT_PHI;
     radius = CAMERA_SPHERE_RADIUS/camera_depth;
     camera_pos[0] = radius * Math.sin(utils.degToRad(camera_angles.omega)) * Math.cos(utils.degToRad(camera_angles.phi));
     camera_pos[1] = Y_WHEEL + radius * Math.cos(utils.degToRad(camera_angles.omega));
