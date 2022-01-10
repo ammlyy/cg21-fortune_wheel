@@ -13,6 +13,9 @@ npx http-server
 The following commands can be used to interact with the wheel:
 
 `Click` on the red button to spin the wheel!
+
 `W`, `A`, `S`, `D` -> rotate the camera
+
 `Z` -> zoom in
+
 `X` -> zoom out
