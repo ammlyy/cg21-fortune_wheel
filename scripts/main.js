@@ -14,6 +14,7 @@ async function init() {
 	// Load all meshes and pushes in var meshes
 	await commons.loadAllMeshes()
 
+	//load frag and vert shader, then attach to their program the combination of fs+vsn to webGL 
 	await commons.loadShaders(shaderDir)
 	gl.useProgram(program);
 
@@ -40,8 +41,11 @@ function main() {
 	gl.enable(gl.DEPTH_TEST);
 	gl.enable(gl.CULL_FACE);
 
+
+	// time variable used for animation
 	var lastUpdateTime = (new Date).getTime();
 
+	// 
 	perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
 
 	drawScene();
